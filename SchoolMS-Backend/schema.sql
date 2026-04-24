@@ -107,7 +107,22 @@ CREATE TABLE IF NOT EXISTS `classes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- 6. students
+-- 6. parents  (must come before students)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `parents` (
+  `id`           INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `user_id`      INT UNSIGNED    NOT NULL,
+  `occupation`   VARCHAR(100)    NULL,
+  `address`      TEXT            NULL,
+  `created_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_parents_user_id` (`user_id`),
+  CONSTRAINT `fk_parents_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 7. students
 -- ============================================================
 CREATE TABLE IF NOT EXISTS `students` (
   `id`            INT UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -130,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `students` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- 7. teachers
+-- 8. teachers
 -- ============================================================
 CREATE TABLE IF NOT EXISTS `teachers` (
   `id`             INT UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -143,21 +158,6 @@ CREATE TABLE IF NOT EXISTS `teachers` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_teachers_user_id` (`user_id`),
   CONSTRAINT `fk_teachers_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ============================================================
--- 8. parents
--- ============================================================
-CREATE TABLE IF NOT EXISTS `parents` (
-  `id`           INT UNSIGNED    NOT NULL AUTO_INCREMENT,
-  `user_id`      INT UNSIGNED    NOT NULL,
-  `occupation`   VARCHAR(100)    NULL,
-  `address`      TEXT            NULL,
-  `created_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_parents_user_id` (`user_id`),
-  CONSTRAINT `fk_parents_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
