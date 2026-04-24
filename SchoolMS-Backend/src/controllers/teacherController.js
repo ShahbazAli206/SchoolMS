@@ -51,7 +51,7 @@ exports.getAssignments = async (req, res, next) => {
 exports.createAssignment = async (req, res, next) => {
   try {
     const {title, description, class_id, student_id, subject_id, due_date, max_marks} = req.body;
-    const file_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const file_url = req.file ? req.file.path : null;
 
     const assignment = await Assignment.create({
       title,
@@ -94,7 +94,7 @@ exports.updateAssignment = async (req, res, next) => {
       return ApiResponse.forbidden(res, 'You can only update your own assignments');
 
     const {title, description, due_date, max_marks, class_id, student_id, subject_id} = req.body;
-    const file_url = req.file ? `/uploads/${req.file.filename}` : assignment.file_url;
+    const file_url = req.file ? req.file.path : assignment.file_url;
 
     await assignment.update({title, description, file_url, due_date, max_marks, class_id, student_id, subject_id});
     return ApiResponse.success(res, {assignment}, 'Assignment updated');
@@ -161,7 +161,7 @@ exports.uploadMaterial = async (req, res, next) => {
     const material = await Material.create({
       title,
       description,
-      file_url:   `/uploads/${req.file.filename}`,
+      file_url:   req.file.path,
       file_name:  req.file.originalname,
       file_type,
       file_size:  req.file.size,

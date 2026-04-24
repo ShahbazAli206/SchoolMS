@@ -174,7 +174,7 @@ exports.sendMessage = async (req, res) => {
     let attachmentUrl = attachment_url;
     if (req.file) {
       messageType = 'image';
-      attachmentUrl = `/uploads/${req.file.filename}`;
+      attachmentUrl = req.file.path;
     }
 
     if (!body && !attachmentUrl) return ApiResponse.error(res, 'body, attachment_url, or image file required');

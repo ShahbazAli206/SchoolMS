@@ -18,7 +18,7 @@ exports.submitComplaint = async (req, res) => {
   try {
     const parentUserId = req.user.id;
     const {title, description, student_id} = req.body;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+    const image_url = req.file ? req.file.path : null;
 
     if (!title || !description) {
       return ApiResponse.error(res, 'title and description are required', 400);
