@@ -12,7 +12,7 @@ import {fetchMyClasses, fetchSubjects, fetchMaterials} from '../../redux/slices/
 import {teacherAPI} from '../../services/teacherService';
 import AppInput from '../../components/common/AppInput';
 import AppButton from '../../components/common/AppButton';
-import DocumentPicker from 'react-native-document-picker';
+import {pick, types as docTypes, errorCodes, isErrorWithCode} from '@react-native-documents/picker';
 
 const FILE_TYPE_ICONS = {pdf: '📄', video: '🎬', image: '🖼️', document: '📃', other: '📎'};
 
@@ -148,21 +148,22 @@ const UploadMaterialScreen = ({navigation}) => {
 
   const pickFile = async () => {
     try {
-      const res = await DocumentPicker.pickSingle({
+      const [res] = await pick({
         type: [
-          DocumentPicker.types.pdf,
-          DocumentPicker.types.video,
-          DocumentPicker.types.images,
-          DocumentPicker.types.doc,
-          DocumentPicker.types.docx,
-          DocumentPicker.types.ppt,
-          DocumentPicker.types.pptx,
+          docTypes.pdf,
+          docTypes.video,
+          docTypes.images,
+          docTypes.doc,
+          docTypes.docx,
+          docTypes.ppt,
+          docTypes.pptx,
         ],
       });
       setPickedFile(res);
       if (errors.file) setErrors(p => ({...p, file: ''}));
     } catch (e) {
-      if (!DocumentPicker.isCancel(e)) Alert.alert('Error', 'Could not pick file.');
+      if (isErrorWithCode(e) && e.code === errorCodes.OPERATION_CANCELED) return;
+      Alert.alert('Error', 'Could not pick file.');
     }
   };
 

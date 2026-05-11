@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   View, Text, StyleSheet, SafeAreaView,
   KeyboardAvoidingView, Platform, TouchableOpacity,
+  Modal, FlatList,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
@@ -13,6 +14,32 @@ import AppCard from '../../components/common/AppCard';
 
 const LOGIN_TYPES = ['email', 'phone', 'username'];
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DEV ONLY — remove this whole block (DEV_USERS, DEV_PASSWORD, the picker
+// modal in JSX, and the "Quick login" button) before production release.
+// ─────────────────────────────────────────────────────────────────────────────
+const DEV_PASSWORD = 'password123';
+const DEV_USERS = [
+  {role: 'Admin',   name: 'Sarah Ahmed',       email: 'admin@schoolms.com'},
+  {role: 'Teacher', name: 'Mr. Ali Hassan',    email: 'ali.hassan@schoolms.com'},
+  {role: 'Teacher', name: 'Ms. Ayesha Khan',   email: 'ayesha.khan@schoolms.com'},
+  {role: 'Teacher', name: 'Mr. Bilal Raza',    email: 'bilal.raza@schoolms.com'},
+  {role: 'Student', name: 'Zain Malik',        email: 'zain@schoolms.com'},
+  {role: 'Student', name: 'Sara Iqbal',        email: 'sara@schoolms.com'},
+  {role: 'Student', name: 'Omar Sheikh',       email: 'omar@schoolms.com'},
+  {role: 'Student', name: 'Fatima Butt',       email: 'fatima@schoolms.com'},
+  {role: 'Student', name: 'Hamza Javed',       email: 'hamza@schoolms.com'},
+  {role: 'Parent',  name: 'Mr. Tariq Malik',   email: 'tariq@schoolms.com'},
+  {role: 'Parent',  name: 'Mrs. Nadia Iqbal',  email: 'nadia@schoolms.com'},
+  {role: 'Parent',  name: 'Mr. Kamran Sheikh', email: 'kamran@schoolms.com'},
+];
+const ROLE_COLORS = {
+  Admin:   '#A29BFE',
+  Teacher: '#6C5CE7',
+  Student: '#00CEC9',
+  Parent:  '#FF7675',
+};
+
 const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const {isLoading, error} = useSelector(state => state.auth);
@@ -22,6 +49,16 @@ const LoginScreen = ({navigation}) => {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+
+  // DEV ONLY — remove with the rest of the dev block before production
+  const [showDevPicker, setShowDevPicker] = useState(false);
+  const pickDevUser = u => {
+    setLoginType('email');
+    setIdentifier(u.email);
+    setPassword(DEV_PASSWORD);
+    setFieldErrors({});
+    setShowDevPicker(false);
+  };
 
   const placeholder = {email: 'Email address', phone: 'Phone number', username: 'Username'}[loginType];
   const kbType = {email: 'email-address', phone: 'phone-pad', username: 'default'}[loginType];
@@ -49,6 +86,15 @@ const LoginScreen = ({navigation}) => {
               School Management System
             </Text>
           </View>
+
+          {/* DEV ONLY — remove this block before production */}
+          <TouchableOpacity
+            onPress={() => setShowDevPicker(true)}
+            style={[styles.devBtn, {borderColor: colors.warning, marginBottom: spacing.md}]}>
+            <Text style={[textStyles.label, {color: colors.warning}]}>
+              🛠️  DEV: Quick login (pick a user)
+            </Text>
+          </TouchableOpacity>
 
           <AppCard>
             <Text style={[textStyles.h4, {color: colors.textPrimary, marginBottom: spacing.lg}]}>Sign In</Text>

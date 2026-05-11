@@ -52,7 +52,13 @@
       "Bash(where py *)",
       "Bash(*)",
       "Bash(cat \"C:\\\\\\\\Users\\\\\\\\M7200~1.SHA\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps\\\\\\\\2486ae53-e7ef-4e6b-8c8c-a2aa32ce22f5\\\\\\\\tasks\\\\\\\\bv03iwmny.output\")",
-      "Read(//c/Users/M7200~1.SHA/AppData/Local/Temp/claude/c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps/2486ae53-e7ef-4e6b-8c8c-a2aa32ce22f5/tasks/**)"
+      "Read(//c/Users/M7200~1.SHA/AppData/Local/Temp/claude/c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps/2486ae53-e7ef-4e6b-8c8c-a2aa32ce22f5/tasks/**)",
+      "PowerShell(Get-Process node, java -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, Path, @{N='StartTime';E={$_.StartTime}} | Format-Table -AutoSize)",
+      "PowerShell($ports = @\\(3306, 5000, 8081\\); foreach \\($p in $ports\\) { $r = Test-NetConnection -ComputerName 127.0.0.1 -Port $p -InformationLevel Quiet -WarningAction SilentlyContinue; Write-Host \"Port $p : $\\(if \\($r\\) {'OPEN'} else {'CLOSED'}\\)\" })",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue | Select-Object Id, StartTime, @{N='Cmd';E={\\(Get-CimInstance Win32_Process -Filter \"ProcessId=$\\($_.Id\\)\"\\).CommandLine.Substring\\(0, [Math]::Min\\(120, \\(Get-CimInstance Win32_Process -Filter \"ProcessId=$\\($_.Id\\)\"\\).CommandLine.Length\\)\\)}} | Format-Table -AutoSize -Wrap)",
+      "PowerShell($r = Test-NetConnection -ComputerName 127.0.0.1 -Port 5000 -InformationLevel Quiet -WarningAction SilentlyContinue; Write-Host \"Port 5000 : $\\(if \\($r\\) {'OPEN'} else {'CLOSED'}\\)\"; if \\($r\\) { try { $resp = Invoke-WebRequest -Uri \"http://localhost:5000/\" -UseBasicParsing -TimeoutSec 3 -ErrorAction SilentlyContinue; Write-Host \"HTTP: $\\($resp.StatusCode\\)\" } catch { Write-Host \"HTTP err: $\\($_.Exception.Message\\)\" } })",
+      "PowerShell(try { $resp = Invoke-WebRequest -Uri \"http://127.0.0.1:5000/api/health\" -UseBasicParsing -TimeoutSec 3; Write-Host \"OK status=$\\($resp.StatusCode\\) body=$\\($resp.Content.Substring\\(0,[Math]::Min\\(200,$resp.Content.Length\\)\\)\\)\" } catch { Write-Host \"Failed: $\\($_.Exception.Message\\)\" } ; netstat -ano | findstr \":5000\")",
+      "PowerShell(Write-Host \"=== Listening ports for any node process ===\"; netstat -ano | findstr \"LISTENING\" | findstr \":5000\\\\|:8081\"; Write-Host \"\"; Write-Host \"=== All node-related listeners ===\"; Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { \\(Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue\\).ProcessName -eq 'node' } | Select-Object LocalAddress, LocalPort, OwningProcess | Format-Table)"
     ],
     "additionalDirectories": [
       "c:\\Users\\M. Shahbaz Ali\\.claude\\projects\\c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps\\memory",

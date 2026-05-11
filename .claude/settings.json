@@ -20,6 +20,7 @@
       "PowerShell(python -c \"import selenium; print\\('selenium', selenium.__version__\\)\")",
       "PowerShell(python \"C:\\\\Users\\\\M. Shahbaz Ali\\\\Desktop\\\\sorry_wife_web.py\")",
       "PowerShell(pip install uiautomation --quiet 2>&1)",
+      "PowerShell(*)",
       "PowerShell(python -c \"import uiautomation as auto; print\\('uiautomation', auto.VERSION\\)\")",
       "PowerShell(python \"C:\\\\Users\\\\M. Shahbaz Ali\\\\Desktop\\\\inspect_whatsapp.py\" 2>&1 | Out-File -FilePath \"C:\\\\Users\\\\M. Shahbaz Ali\\\\Desktop\\\\wa_tree.txt\" -Encoding utf8; \\(Get-Content \"C:\\\\Users\\\\M. Shahbaz Ali\\\\Desktop\\\\wa_tree.txt\"\\).Length)",
       "PowerShell(python \"C:\\\\Users\\\\M. Shahbaz Ali\\\\Desktop\\\\inspect_whatsapp2.py\")",
