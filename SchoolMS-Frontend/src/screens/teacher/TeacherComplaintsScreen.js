@@ -2,8 +2,10 @@ import React, {useEffect, useCallback, useState} from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
+import {useTheme} from '../../themes/ThemeContext';
+import PageHeader from '../../components/common/PageHeader';
 import {fetchTeacherInbox, replyComplaintThunk} from '../../redux/slices/complaintSlice';
 
 const STATUS_COLORS = {
@@ -23,8 +25,8 @@ const StatusBadge = ({status}) => {
 };
 
 const TeacherComplaintsScreen = ({navigation}) => {
-  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
+  const {colors} = useTheme();
   const {inboxList, loading} = useSelector(s => s.complaints);
   const [filter, setFilter] = useState('all');
 
@@ -72,15 +74,17 @@ const TeacherComplaintsScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: '#EEF0FB'}]} edges={['left', 'right']}>
-      <View style={[styles.header, {paddingTop: insets.top + 8}]}>
-        <Text style={styles.headerTitle}>Complaints Inbox</Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('TeacherSubmitComplaint')}
-          style={styles.newBtn}>
-          <Text style={{color: '#fff', fontWeight: '800'}}>+ New</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader
+        title="Complaints"
+        rightAction={
+          <TouchableOpacity
+            onPress={() => navigation.navigate('TeacherSubmitComplaint')}
+            style={styles.newBtn}>
+            <Text style={{color: '#fff', fontWeight: '800'}}>+ New</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <View style={styles.filterRow}>
         {['all', 'pending', 'in_review', 'resolved', 'rejected'].map(f => (
@@ -113,9 +117,7 @@ const TeacherComplaintsScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1},
-  header: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingBottom: 10, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#EFEFF4'},
-  headerTitle: {flex: 1, fontSize: 18, fontWeight: '800', color: '#1F2937'},
-  newBtn: {backgroundColor: '#6C5CE7', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10},
+  newBtn: {backgroundColor: 'rgba(255,255,255,0.18)', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10},
 
   filterRow: {flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#EFEFF4'},
   filterChip: {paddingHorizontal: 10, paddingVertical: 5, borderRadius: 14, borderWidth: 1, borderColor: '#E5E7EB', backgroundColor: '#FFFFFF'},

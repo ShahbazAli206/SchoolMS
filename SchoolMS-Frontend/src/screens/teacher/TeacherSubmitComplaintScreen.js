@@ -3,13 +3,13 @@ import {
   View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView,
   Alert, ActivityIndicator,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import PageHeader from '../../components/common/PageHeader';
 import {useDispatch, useSelector} from 'react-redux';
 import {teacherSubmitComplaintThunk} from '../../redux/slices/complaintSlice';
 import {fetchMyClasses, fetchClassStudents} from '../../redux/slices/teacherSlice';
 
 const TeacherSubmitComplaintScreen = ({navigation}) => {
-  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const {classes, classStudents} = useSelector(s => s.teacher);
   const {actionLoading} = useSelector(s => s.complaints);
@@ -47,14 +47,12 @@ const TeacherSubmitComplaintScreen = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: '#EEF0FB'}]} edges={['left', 'right']}>
-      <View style={[styles.header, {paddingTop: insets.top + 8}]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backChevron}>‹</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notify Parent</Text>
-        <View style={{width: 36}} />
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: '#EEF0FB'}]} edges={['left','right','bottom']}>
+      <PageHeader
+        title="Notify Parent"
+        showBack={true}
+        onBackPress={() => navigation.goBack()}
+      />
 
       <ScrollView contentContainerStyle={{padding: 14, paddingBottom: 40}}>
         <Text style={styles.section}>Class</Text>
@@ -126,10 +124,6 @@ const TeacherSubmitComplaintScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1},
-  header: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#EFEFF4'},
-  backBtn: {width: 36, height: 36, alignItems: 'center', justifyContent: 'center'},
-  backChevron: {fontSize: 26, color: '#1F2937', marginTop: -3},
-  headerTitle: {flex: 1, textAlign: 'center', fontSize: 16, fontWeight: '800', color: '#1F2937'},
 
   section: {fontSize: 13, fontWeight: '800', color: '#1F2937', marginTop: 14, marginBottom: 8},
   muted: {fontSize: 12, color: '#9CA3AF'},

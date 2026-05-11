@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import PageHeader from '../../components/common/PageHeader';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
 import {fetchMyClasses, fetchSubjects, fetchMaterials} from '../../redux/slices/teacherSlice';
@@ -115,7 +116,7 @@ const MaterialCard = ({item, onDelete, onEdit, colors, spacing, borderRadius, te
 );
 
 // ── Main screen ───────────────────────────────────────────────────────────────
-const UploadMaterialScreen = () => {
+const UploadMaterialScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const {colors, spacing, borderRadius, textStyles, shadow} = useTheme();
   const {classes, subjects, materials, loading} = useSelector(s => s.teacher);
@@ -219,10 +220,12 @@ const UploadMaterialScreen = () => {
   const themePass = {colors, spacing, borderRadius, textStyles, shadow};
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: 20}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Upload Material</Text>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader
+        title="Upload Material"
+        showBack={true}
+        onBackPress={() => navigation.goBack()}
+      />
 
       <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={[styles.scroll, {padding: spacing.base}]} showsVerticalScrollIndicator={false}>
@@ -348,7 +351,6 @@ const UploadMaterialScreen = () => {
 
 const styles = StyleSheet.create({
   container:     {flex: 1},
-  header:        {flexDirection: 'row', alignItems: 'center'},
   scroll:        {paddingBottom: 40},
   formCard:      {},
   chip:          {paddingHorizontal: 14, paddingVertical: 7},

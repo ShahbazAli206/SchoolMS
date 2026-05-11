@@ -1,10 +1,12 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {
-  View, Text, StyleSheet, SafeAreaView, FlatList,
+  View, Text, StyleSheet, FlatList,
   TouchableOpacity, Alert, TextInput, RefreshControl, ScrollView,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
+import PageHeader from '../../components/common/PageHeader';
 import {
   fetchMyClasses, fetchSubjects, fetchClassStudents,
   fetchMarks, bulkUpsertMarksThunk,
@@ -95,10 +97,8 @@ const MarksScreen = () => {
   const chipText = (active) => [textStyles.caption, {color: active ? colors.white : colors.textSecondary}];
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: 20}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Enter Marks</Text>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader title="Enter Marks" />
 
       <ScrollView style={{flex: 1}} contentContainerStyle={[styles.scroll, {padding: spacing.base}]}
         showsVerticalScrollIndicator={false}

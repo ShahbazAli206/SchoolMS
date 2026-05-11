@@ -5,13 +5,13 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../../themes/ThemeContext';
+import PageHeader from '../../components/common/PageHeader';
 import {fetchConversations, setActiveConv} from '../../redux/slices/chatSlice';
 
 const initials = name =>
@@ -79,7 +79,6 @@ const ConvItem = ({item, currentUserId, onPress, colors, textStyles, spacing}) =
 
 const ConversationsScreen = ({navigation}) => {
   const dispatch    = useDispatch();
-  const insets      = useSafeAreaInsets();
   const {colors, spacing, textStyles} = useTheme();
   const {conversations, loading}      = useSelector(s => s.chat);
   const currentUserId = useSelector(s => s.auth.user?.id);
@@ -114,13 +113,15 @@ const ConversationsScreen = ({navigation}) => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: spacing.base + insets.top}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Messages</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('NewConversation')} style={styles.fab}>
-          <Text style={[textStyles.h5, {color: colors.white}]}>＋</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader
+        title="Messages"
+        rightAction={
+          <TouchableOpacity onPress={() => navigation.navigate('NewConversation')} style={styles.fab}>
+            <Text style={{color: '#fff', fontSize: 22, fontWeight: '300'}}>＋</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <FlatList
         data={conversations}

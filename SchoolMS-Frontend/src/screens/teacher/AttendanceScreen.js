@@ -1,10 +1,12 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {
-  View, Text, StyleSheet, SafeAreaView, ScrollView,
+  View, Text, StyleSheet, ScrollView,
   TouchableOpacity, Alert, RefreshControl,
 } from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
+import PageHeader from '../../components/common/PageHeader';
 import {
   fetchMyClasses, fetchClassStudents,
   fetchAttendance, bulkMarkAttendanceThunk,
@@ -88,10 +90,8 @@ const AttendanceScreen = () => {
   const fadedFor = (colorKey) => colors[`${colorKey}Faded`] ?? colors.primaryFaded;
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: 20}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Attendance</Text>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader title="Attendance" />
 
       <ScrollView
         contentContainerStyle={[styles.scroll, {padding: spacing.base}]}
