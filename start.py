@@ -5,6 +5,13 @@ Run: python start.py
 
 import os, sys, time, socket, subprocess, datetime
 
+# Force UTF-8 stdout so box-drawing characters render on Windows cmd
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+os.system("chcp 65001 > nul")
+
 ROOT     = os.path.dirname(os.path.abspath(__file__))
 BACKEND  = os.path.join(ROOT, "SchoolMS-Backend")
 FRONTEND = os.path.join(ROOT, "SchoolMS-Frontend")
