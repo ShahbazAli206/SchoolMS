@@ -35,25 +35,9 @@ const TeacherActionSheet = ({visible, onClose, navigation}) => {
 
   const pick = (key) => {
     onClose();
-    // Map keys to nav targets
-    switch (key) {
-      case 'Attendance':
-      case 'Marks':
-        navigation.navigate(key);
-        break;
-      case 'Assignments':
-        navigation.navigate('AssignmentsTab', {screen: 'Assignments'});
-        break;
-      case 'UploadMaterial':
-      case 'TeacherSubmitComplaint':
-        navigation.navigate(key);
-        break;
-      case 'NewConversation':
-        navigation.navigate('ChatTab', {screen: 'NewConversation'});
-        break;
-      default:
-        navigation.navigate(key);
-    }
+    // All target screens live inside HomeTab's HomeStack now.
+    // The action sheet sits at RootStack level, so we navigate Main → HomeTab → <screen>.
+    navigation.navigate('Main', {screen: 'HomeTab', params: {screen: key}});
   };
 
   return (

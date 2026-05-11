@@ -20,7 +20,7 @@ const STAT_TILES = [
 ];
 
 const QUICK_ACTIONS = [
-  {label: 'Take\nAttendance',    icon: '👤✓', tint: '#00B894', bg: '#E5FBF5', screen: 'Attendance'},
+  {label: 'Take\nAttendance',    icon: '✅', tint: '#00B894', bg: '#E5FBF5', screen: 'Attendance'},
   {label: 'Assignments',          icon: '📝',  tint: '#6C5CE7', bg: '#EEEBFF', screen: 'Assignments'},
   {label: 'Study\nMaterials',     icon: '📁',  tint: '#FDCB6E', bg: '#FFF7E0', screen: 'UploadMaterial'},
   {label: 'Marks\nEntry',         icon: '📊',  tint: '#0984E3', bg: '#EBF5FF', screen: 'Marks'},
@@ -96,9 +96,11 @@ const QuickAction = ({action, delay, onPress}) => {
   );
 };
 
-const ScheduleCard = ({onPress}) => {
+const ScheduleCard = ({cls, onPress}) => {
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(fade, {toValue: 1, duration: 500, delay: 400, useNativeDriver: true}).start(); }, [fade]);
+  const subject = cls?.next_subject || cls?.subject || 'Class Session';
+  const className = cls ? `${cls.name}${cls.section ? ` — ${cls.section}` : ''}` : '—';
   return (
     <Animated.View style={{opacity: fade}}>
       <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.scheduleCard}>
@@ -109,8 +111,8 @@ const ScheduleCard = ({onPress}) => {
           <Text style={styles.scheduleTimeTop}>09:45 <Text style={styles.scheduleTimeUnit}>AM</Text></Text>
         </View>
         <View style={{flex: 1, marginLeft: 4}}>
-          <Text style={styles.scheduleSubject}>Mathematics</Text>
-          <Text style={styles.scheduleClass}>Class 8-A</Text>
+          <Text style={styles.scheduleSubject} numberOfLines={1}>{subject}</Text>
+          <Text style={styles.scheduleClass} numberOfLines={1}>{className}</Text>
         </View>
         <View style={styles.scheduleStatus}>
           <Text style={styles.scheduleStatusText}>In Progress</Text>
@@ -176,13 +178,22 @@ const TeacherDashboardScreen = ({navigation}) => {
   const announcement = (notifs || []).find(n => n.type === 'announcement') || (notifs || [])[0];
 
   const goAction = (screen) => {
-    // Map quick-action labels to navigator routes (some are tabs, some are stack routes)
-    const TAB_ROUTES = {Assignments: 'AssignmentsTab', Chat: 'ChatTab'};
-    if (TAB_ROUTES[screen]) {
-      navigation.navigate(TAB_ROUTES[screen]);
+    // Tabs: switch to a sibling tab (Classes/Students/Profile).
+    // Quick-action "Chat" → open Conversations (lives in HomeStack now).
+    const TAB_TARGETS = {
+      TeacherClasses:  'ClassesTab',
+      TeacherStudents: 'StudentsTab',
+      ProfileTab:      'ProfileTab',
+    };
+    if (TAB_TARGETS[screen]) {
+      navigation.getParent()?.navigate(TAB_TARGETS[screen]);
       return;
     }
-    // Stack routes within Home stack
+    if (screen === 'Chat') {
+      navigation.navigate('Conversations');
+      return;
+    }
+    // Everything else is a screen inside the current HomeStack
     navigation.navigate(screen);
   };
 
@@ -243,7 +254,7 @@ const TeacherDashboardScreen = ({navigation}) => {
 
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={() => navigation.navigate('Profile')}
+              onPress={() => navigation.getParent()?.navigate('ProfileTab')}
               style={styles.heroAvatarWrap}>
               <View style={styles.heroAvatar}>
                 <Text style={{fontSize: 28}}>👨‍🏫</Text>
@@ -278,7 +289,7 @@ const TeacherDashboardScreen = ({navigation}) => {
                 value={statValue(tile.key)}
                 delay={i * 80}
                 onPress={() => {
-                  const map = {myClasses: 'TeacherClasses', totalAssignments: 'AssignmentsTab', dueSoonAssignments: 'AssignmentsTab', todayAttendancePct: 'Attendance'};
+                  const map = {myClasses: 'TeacherClasses', totalAssignments: 'Assignments', dueSoonAssignments: 'Assignments', todayAttendancePct: 'Attendance'};
                   goAction(map[tile.key]);
                 }}
               />
@@ -290,16 +301,16 @@ const TeacherDashboardScreen = ({navigation}) => {
         <View style={styles.section}>
           <View style={styles.sectionHead}>
             <Text style={styles.sectionTitle}>Quick Actions</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('TeacherClasses')}>
+            <TouchableOpacity onPress={() => navigation.getParent()?.navigate('ClassesTab')}>
               <Text style={styles.viewAll}>View All →</Text>
             </TouchableOpacity>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingHorizontal: 14, paddingVertical: 4}}>
+            contentContainerStyle={{paddingHorizontal: 12, paddingVertical: 4}}>
             {QUICK_ACTIONS.map((a, i) => (
-              <View key={a.label} style={{marginRight: 10}}>
+              <View key={a.label} style={{marginRight: 6}}>
                 <QuickAction action={a} delay={150 + i * 60} onPress={() => goAction(a.screen)} />
               </View>
             ))}
@@ -310,12 +321,15 @@ const TeacherDashboardScreen = ({navigation}) => {
         <View style={styles.section}>
           <View style={styles.sectionHead}>
             <Text style={styles.sectionTitle}>Today's Schedule</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('TeacherClasses')}>
+            <TouchableOpacity onPress={() => navigation.getParent()?.navigate('ClassesTab')}>
               <Text style={styles.viewAll}>View Timetable →</Text>
             </TouchableOpacity>
           </View>
           <View style={{paddingHorizontal: 14}}>
-            <ScheduleCard onPress={() => navigation.navigate('TeacherClasses')} />
+            <ScheduleCard
+              cls={classes?.[0]}
+              onPress={() => navigation.getParent()?.navigate('ClassesTab')}
+            />
           </View>
         </View>
 
@@ -387,9 +401,9 @@ const styles = StyleSheet.create({
   statChev: {position: 'absolute', right: 10, bottom: 10, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center'},
 
   // Quick Actions
-  quickCard: {width: 76, alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, backgroundColor: '#FFFFFF', borderRadius: 14, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: {width: 0, height: 2}, elevation: 2},
-  quickIconWrap: {width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 6},
-  quickLabel: {fontSize: 10, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 13},
+  quickCard: {width: 58, alignItems: 'center', paddingVertical: 9, paddingHorizontal: 2, backgroundColor: '#FFFFFF', borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: {width: 0, height: 2}, elevation: 2},
+  quickIconWrap: {width: 38, height: 38, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginBottom: 5},
+  quickLabel: {fontSize: 9.5, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 12},
 
   // Schedule card
   scheduleCard: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 14, paddingVertical: 14, paddingRight: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: {width: 0, height: 2}, elevation: 2},
