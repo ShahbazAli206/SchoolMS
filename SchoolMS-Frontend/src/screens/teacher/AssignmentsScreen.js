@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
+import PageHeader from '../../components/common/PageHeader';
 import {
   fetchAssignments, createAssignmentThunk, deleteAssignmentThunk,
   fetchMyClasses, fetchClassStudents, fetchSubjects,
@@ -300,15 +301,12 @@ const AssignmentsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: 20}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Assignments</Text>
-        <TouchableOpacity
-          onPress={() => setShowModal(true)}
-          style={[styles.addBtn, {backgroundColor: colors.whiteAlpha20, borderRadius: borderRadius.md}]}>
-          <Text style={[textStyles.label, {color: colors.white}]}>+ New</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader
+        title="Assignments"
+        onAddPress={() => setShowModal(true)}
+        addLabel="+ New"
+      />
 
       <FlatList
         data={assignments}

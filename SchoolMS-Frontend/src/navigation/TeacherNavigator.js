@@ -122,7 +122,17 @@ const TeacherNavigator = () => {
           },
         })}
       />
-      <Tab.Screen name="Assignments" component={TeacherAssignmentStack} options={{title: 'Assignments'}} />
+      <Tab.Screen
+        name="Assignments"
+        component={TeacherAssignmentStack}
+        options={{title: 'Assignments'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Assignments', {screen: 'Assignments'});
+          },
+        })}
+      />
       <Tab.Screen name="Attendance"  component={AttendanceScreen}       options={{title: 'Attendance'}} />
       <Tab.Screen name="Marks"       component={MarksScreen}            options={{title: 'Marks'}} />
       <Tab.Screen

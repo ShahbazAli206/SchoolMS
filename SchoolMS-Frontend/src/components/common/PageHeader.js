@@ -3,12 +3,6 @@ import {View, Text, TouchableOpacity, StyleSheet, StatusBar} from 'react-native'
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../../themes/ThemeContext';
 
-/**
- * Unified themed page header.
- * - Light mode: light surface bg + dark text + dark status-bar text
- * - Dark mode:  dark bg + light text + light status-bar text
- * The bg/text colors come from the theme so all screens stay consistent.
- */
 const PageHeader = ({
   title,
   subtitle,
@@ -19,12 +13,12 @@ const PageHeader = ({
   rightAction,
 }) => {
   const insets = useSafeAreaInsets();
-  const {colors, isDark} = useTheme();
+  const {colors} = useTheme();
 
   return (
     <>
       <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
+        barStyle="light-content"
         backgroundColor={colors.headerBg}
         translucent={false}
       />
@@ -43,7 +37,9 @@ const PageHeader = ({
               onPress={onBackPress}
               style={styles.backBtn}
               hitSlop={{top: 12, bottom: 12, left: 12, right: 12}}>
-              <Text style={[styles.backChevron, {color: colors.headerText}]}>‹</Text>
+              <View style={styles.backArrow}>
+                <Text style={styles.backArrowText}>←</Text>
+              </View>
             </TouchableOpacity>
           ) : (
             <View style={styles.backBtn} />
@@ -56,7 +52,7 @@ const PageHeader = ({
               {title}
             </Text>
             {subtitle ? (
-              <Text style={[styles.subtitle, {color: colors.textSecondary}]} numberOfLines={1}>
+              <Text style={[styles.subtitle, {color: 'rgba(255,255,255,0.7)'}]} numberOfLines={1}>
                 {subtitle}
               </Text>
             ) : null}
@@ -66,7 +62,7 @@ const PageHeader = ({
             {onAddPress ? (
               <TouchableOpacity
                 onPress={onAddPress}
-                style={[styles.addBtn, {backgroundColor: colors.primary}]}>
+                style={styles.addBtn}>
                 <Text style={styles.addBtnText}>{addLabel}</Text>
               </TouchableOpacity>
             ) : rightAction || null}
@@ -80,20 +76,25 @@ const PageHeader = ({
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 12,
-    paddingBottom: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingBottom: 14,
+    borderBottomWidth: 0,
   },
   row: {flexDirection: 'row', alignItems: 'center'},
   backBtn: {
     width: 40, height: 40,
     alignItems: 'center', justifyContent: 'center',
   },
-  backChevron: {fontSize: 30, fontWeight: '300', marginTop: -4},
+  backArrow: {
+    width: 32, height: 32, borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  backArrowText: {color: '#FFFFFF', fontSize: 18, fontWeight: '600', marginTop: -1},
   titleWrap: {flex: 1, alignItems: 'center'},
-  title:    {fontSize: 16, fontWeight: '800'},
+  title:    {fontSize: 17, fontWeight: '800', color: '#FFFFFF'},
   subtitle: {fontSize: 11, marginTop: 1, fontWeight: '500'},
   rightWrap: {minWidth: 40, alignItems: 'flex-end'},
-  addBtn:   {paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10},
+  addBtn:   {paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.18)'},
   addBtnText: {color: '#FFFFFF', fontSize: 12, fontWeight: '800'},
 });
 
