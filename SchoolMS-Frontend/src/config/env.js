@@ -8,7 +8,7 @@
 
 const ENV = {
   development: {
-    BASE_URL: 'http://192.168.100.77:5000/api',
+    BASE_URL: 'http://localhost:5000/api',
     TIMEOUT: 30000,
   },
   production: {

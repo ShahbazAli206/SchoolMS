@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Switch,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -15,6 +16,7 @@ import {authAPI} from '../../services/authService';
 import {logoutUser, updateUser} from '../../redux/slices/authSlice';
 import AppInput from '../../components/common/AppInput';
 import AppButton from '../../components/common/AppButton';
+import LogoutModal from '../../components/common/LogoutModal';
 
 const ROLE_COLORS = {
   admin:   '#e74c3c',
@@ -29,11 +31,12 @@ const initials = name =>
 
 const StudentProfileScreen = () => {
   const dispatch = useDispatch();
-  const {colors, spacing, borderRadius, textStyles} = useTheme();
+  const {colors, spacing, borderRadius, textStyles, isDark, toggleTheme} = useTheme();
   const {user} = useSelector(s => s.auth);
 
   const [showEditForm, setShowEditForm] = useState(false);
   const [showPwForm, setShowPwForm] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -103,12 +106,7 @@ const StudentProfileScreen = () => {
     }
   };
 
-  const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      {text: 'Cancel', style: 'cancel'},
-      {text: 'Logout', style: 'destructive', onPress: () => dispatch(logoutUser())},
-    ]);
-  };
+  const handleLogout = () => setShowLogout(true);
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
@@ -251,13 +249,36 @@ const StudentProfileScreen = () => {
           )}
         </View>
 
+        {/* Dark Mode */}
+        <View style={[styles.settingRow, {backgroundColor: colors.surface, borderRadius: borderRadius.md, padding: spacing.md, marginBottom: spacing.sm}]}>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+            <Text style={{fontSize: 20}}>{isDark ? '🌙' : '☀️'}</Text>
+            <View>
+              <Text style={[textStyles.body2, {color: colors.textPrimary, fontWeight: '600'}]}>Dark Mode</Text>
+              <Text style={[textStyles.caption, {color: colors.textSecondary}]}>{isDark ? 'Dark theme active' : 'Light theme active'}</Text>
+            </View>
+          </View>
+          <Switch
+            value={isDark}
+            onValueChange={toggleTheme}
+            trackColor={{false: colors.border, true: '#6C5CE7'}}
+            thumbColor="#fff"
+          />
+        </View>
+
         {/* Logout */}
         <TouchableOpacity
           onPress={handleLogout}
           style={[styles.logoutBtn, {backgroundColor: colors.errorFaded, borderRadius: borderRadius.md}]}>
-          <Text style={[textStyles.body2, {color: colors.error, fontWeight: '600'}]}>Logout</Text>
+          <Text style={[textStyles.body2, {color: colors.error, fontWeight: '600'}]}>🚪  Logout</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <LogoutModal
+        visible={showLogout}
+        onCancel={() => setShowLogout(false)}
+        onConfirm={() => { setShowLogout(false); dispatch(logoutUser()); }}
+      />
     </SafeAreaView>
   );
 };
@@ -273,6 +294,7 @@ const styles = StyleSheet.create({
   editBtn: {paddingHorizontal: 16, paddingVertical: 8, alignSelf: 'flex-start', marginTop: 8},
   buttonRow: {flexDirection: 'row', marginTop: 12},
   pwToggle: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 8, borderWidth: 1},
+  settingRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   logoutBtn: {padding: 12, alignItems: 'center'},
 });
 

@@ -73,9 +73,12 @@ const TeacherDashboardScreen = ({navigation}) => {
               <Text style={styles.heroBadgeText}>Teacher Portal</Text>
             </View>
           </View>
-          <View style={[styles.heroAvatar, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={[styles.heroAvatar, {backgroundColor: 'rgba(255,255,255,0.2)'}]}
+            activeOpacity={0.8}>
             <Text style={{fontSize: 30}}>👨‍🏫</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.heroBubble1} />
         <View style={styles.heroBubble2} />

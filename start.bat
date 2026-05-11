@@ -1,63 +1,66 @@
 @echo off
-title SchoolMS — Startup
+title SchoolMS — One Click Start
 color 0A
+cls
 
-echo ================================================
-echo   SchoolMS — Starting All Services
-echo ================================================
+echo.
+echo  =====================================================
+echo    SchoolMS — One Click Startup
+echo  =====================================================
 echo.
 
-:: ── Check adb device ────────────────────────────────────────────────────────
-echo [1/4] Checking connected Android device...
-adb devices 2>nul | findstr /V "List" | findstr "device" >nul
+:: ── Check Python ─────────────────────────────────────────────────────────────
+python --version >nul 2>&1
 if errorlevel 1 (
-    echo   WARNING: No Android device detected via USB.
-    echo   Connect your phone and enable USB Debugging, then re-run.
-    echo.
-) else (
-    echo   Device found.
+    echo  [ERROR] Python not found. Running legacy bat startup...
+    goto LEGACY
 )
 
-:: ── Forward Metro port to phone (8081 = RN default) ─────────────────────────
-echo [2/4] Forwarding Metro port to phone...
-adb reverse tcp:8081 tcp:8081 >nul 2>&1
-echo   Done. (port 8081)
+:: ── Run Python launcher ───────────────────────────────────────────────────────
+python "%~dp0start.py"
+goto END
 
-:: ── Start Backend ────────────────────────────────────────────────────────────
-echo [3/4] Starting Backend API on port 5000...
+:LEGACY
+:: ── Fallback: plain bat startup ──────────────────────────────────────────────
+echo  [1/5] Starting XAMPP MySQL...
+net start mysql >nul 2>&1
+if errorlevel 1 (
+    start "" "C:\xampp\mysql\bin\mysqld.exe" --console
+    timeout /t 4 /nobreak >nul
+)
+echo       MySQL started.
+
+echo  [2/5] Checking ADB device...
+adb devices 2>nul | findstr /V "List" | findstr "device" >nul
+if not errorlevel 1 (
+    adb reverse tcp:5000 tcp:5000 >nul 2>&1
+    adb reverse tcp:8081 tcp:8081 >nul 2>&1
+    echo       Device found. Ports forwarded.
+) else (
+    echo       WARNING: No device. Connect phone with USB Debugging.
+)
+
+echo  [3/5] Starting Backend...
 start "SchoolMS Backend" cmd /k "cd /d "%~dp0SchoolMS-Backend" && node server.js"
-
-:: Wait for backend to be ready
 timeout /t 4 /nobreak >nul
 
-:: ── Start Metro Bundler ──────────────────────────────────────────────────────
-echo [4/4] Starting Metro Bundler on port 8081...
-start "SchoolMS Metro" cmd /k "cd /d "%~dp0SchoolMS" && npx react-native start --port 8081 --reset-cache"
-
-:: Wait for Metro to warm up, then launch app
+echo  [4/5] Starting Metro Bundler...
+start "SchoolMS Metro" cmd /k "cd /d "%~dp0SchoolMS-Frontend" && npx react-native start --port 8081 --reset-cache"
 timeout /t 15 /nobreak >nul
 
-echo.
-echo Launching app on connected phone...
+echo  [5/5] Launching app on phone...
 adb shell am force-stop com.schoolms >nul 2>&1
 timeout /t 1 /nobreak >nul
 adb shell am start -n com.schoolms/.MainActivity >nul 2>&1
 
 echo.
-echo ================================================
-echo   All services started!
+echo  =====================================================
+echo    All services started!
+echo    Backend : http://localhost:5000
+echo    Metro   : http://localhost:8081
+echo    Login   : admin@schoolms.com / password123
+echo  =====================================================
 echo.
-echo   Backend : http://localhost:5000
-echo   Metro   : http://localhost:8081
-echo   App     : Launching on phone...
-echo.
-echo   LOGIN CREDENTIALS (password: School@123)
-echo   Admin    : admin
-echo   Teachers : ali_teacher / ayesha_teacher / bilal_teacher
-echo   Students : zain_student / sara_student / omar_student
-echo              fatima_student / hamza_student
-echo   Parents  : tariq_parent / nadia_parent / kamran_parent
-echo ================================================
-echo.
-echo   Close this window whenever you want to stop.
 pause
+
+:END

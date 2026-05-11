@@ -25,6 +25,7 @@ const TeacherHomeStack = () => (
   <Stack.Navigator screenOptions={{headerShown: false}}>
     <Stack.Screen name="TeacherDashboard" component={TeacherDashboardScreen} />
     <Stack.Screen name="UploadMaterial"   component={UploadMaterialScreen} />
+    <Stack.Screen name="Profile"          component={ProfileScreen} />
   </Stack.Navigator>
 );
 

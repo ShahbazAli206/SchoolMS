@@ -145,10 +145,12 @@ const UserManagementScreen = ({navigation, route}) => {
 
   const initialRole = route?.params?.defaultRole || 'all';
   const [search, setSearch] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
   const [roleFilter, setRoleFilter] = useState(initialRole);
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const searchTimer = useRef(null);
+  const searchInputRef = useRef(null);
 
   // sync incoming role param (e.g. when re-navigating with new role)
   useEffect(() => {
@@ -233,21 +235,37 @@ const UserManagementScreen = ({navigation, route}) => {
         addLabel="+ Add"
       />
 
-      {/* Search bar */}
-      <View style={[styles.searchBar, {backgroundColor: colors.whiteAlpha20, borderRadius: spacing.md, marginTop: spacing.md, marginHorizontal: spacing.base}]}>
-        <Text style={{fontSize: 16, marginRight: 8}}>🔍</Text>
-        <TextInput
-          style={[textStyles.body2, {color: colors.white, flex: 1}]}
-          placeholder="Search by name, email or phone..."
-          placeholderTextColor={colors.whiteAlpha40}
-          value={search}
-          onChangeText={setSearch}
-        />
-        {search ? (
-          <TouchableOpacity onPress={() => setSearch('')}>
-            <Text style={{color: colors.whiteAlpha80, fontSize: 18}}>✕</Text>
-          </TouchableOpacity>
-        ) : null}
+      {/* Search toggle + bar */}
+      <View style={[styles.searchRow, {paddingHorizontal: spacing.base, paddingTop: spacing.sm}]}>
+        <TouchableOpacity
+          onPress={() => {
+            const next = !showSearch;
+            setShowSearch(next);
+            if (!next) setSearch('');
+            else setTimeout(() => searchInputRef.current?.focus(), 100);
+          }}
+          style={[styles.searchIconBtn, {backgroundColor: showSearch ? colors.primaryFaded : colors.inputBg, borderRadius: borderRadius.md}]}>
+          <Text style={{fontSize: 18}}>🔍</Text>
+        </TouchableOpacity>
+
+        {showSearch && (
+          <View style={[styles.searchInput, {backgroundColor: colors.inputBg, borderRadius: borderRadius.md, borderWidth: 1, borderColor: colors.primary}]}>
+            <TextInput
+              ref={searchInputRef}
+              style={[textStyles.body2, {color: colors.textPrimary, flex: 1}]}
+              placeholder="Search by name, email or phone..."
+              placeholderTextColor={colors.textSecondary}
+              value={search}
+              onChangeText={setSearch}
+              autoFocus
+            />
+            {search ? (
+              <TouchableOpacity onPress={() => setSearch('')} style={{paddingHorizontal: 8}}>
+                <Text style={{color: colors.textSecondary, fontSize: 16}}>✕</Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
       </View>
 
       {/* Role filter chips */}
@@ -321,7 +339,9 @@ const styles = StyleSheet.create({
   header: {},
   headerRow: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
   addBtn: {paddingHorizontal: 14, paddingVertical: 6},
-  searchBar: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8},
+  searchRow: {flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4},
+  searchIconBtn: {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
+  searchInput: {flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 40},
   filterRow: {flexDirection: 'row'},
   filterChip: {paddingHorizontal: 14, paddingVertical: 6},
   countRow: {},

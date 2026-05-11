@@ -89,9 +89,12 @@ const StudentDashboardScreen = ({navigation}) => {
               <Text style={styles.heroBadgeText}>Student Portal</Text>
             </View>
           </View>
-          <View style={[styles.heroAvatar, {backgroundColor: colors.whiteAlpha20}]}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Profile')}
+            style={[styles.heroAvatar, {backgroundColor: colors.whiteAlpha20}]}
+            activeOpacity={0.8}>
             <Text style={{fontSize: 30}}>🎓</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         {/* decorative circles */}
         <View style={styles.heroBubble1} />

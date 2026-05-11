@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, TextInput, Switch,
-  Alert, ActivityIndicator, Modal,
+  Alert, ActivityIndicator,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,6 +10,7 @@ import {useTheme} from '../../themes/ThemeContext';
 import {logoutUser} from '../../redux/slices/authSlice';
 import {authAPI} from '../../services/authService';
 import PageHeader from '../../components/common/PageHeader';
+import LogoutModal from '../../components/common/LogoutModal';
 
 const ROLE_META = {
   admin:   {color: '#A29BFE', bg: 'rgba(162,155,254,0.15)', label: 'Administrator', icon: '👑'},
@@ -184,30 +185,11 @@ const ProfileScreen = ({navigation}) => {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* ── LOGOUT MODAL ── */}
-      <Modal visible={showLogout} transparent animationType="fade" onRequestClose={() => setShowLogout(false)}>
-        <View style={styles.overlay}>
-          <View style={[styles.modal, {backgroundColor: colors.surface, borderRadius: borderRadius.xl}]}>
-            <Text style={{fontSize: 36, textAlign: 'center', marginBottom: 10}}>👋</Text>
-            <Text style={[styles.modalTitle, {color: colors.textPrimary}]}>Sign Out?</Text>
-            <Text style={[styles.modalSub, {color: colors.textSecondary}]}>
-              You will be logged out of your account.
-            </Text>
-            <View style={styles.modalBtns}>
-              <TouchableOpacity
-                onPress={() => setShowLogout(false)}
-                style={[styles.modalBtn, {backgroundColor: colors.inputBg, borderRadius: borderRadius.lg}]}>
-                <Text style={[styles.modalBtnText, {color: colors.textPrimary}]}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => { setShowLogout(false); dispatch(logoutUser()); }}
-                style={[styles.modalBtn, {backgroundColor: '#6C5CE7', borderRadius: borderRadius.lg}]}>
-                <Text style={[styles.modalBtnText, {color: '#fff'}]}>Sign Out</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <LogoutModal
+        visible={showLogout}
+        onCancel={() => setShowLogout(false)}
+        onConfirm={() => { setShowLogout(false); dispatch(logoutUser()); }}
+      />
     </SafeAreaView>
   );
 };
@@ -254,13 +236,6 @@ const styles = StyleSheet.create({
                  gap: 10, paddingVertical: 14, marginTop: 16, borderWidth: 1.5},
   logoutText:   {fontSize: 15, fontWeight: '700'},
 
-  overlay:      {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24},
-  modal:        {padding: 24, width: '100%', maxWidth: 320, alignItems: 'center'},
-  modalTitle:   {fontSize: 18, fontWeight: '800', marginBottom: 8},
-  modalSub:     {fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20},
-  modalBtns:    {flexDirection: 'row', gap: 12, width: '100%'},
-  modalBtn:     {flex: 1, paddingVertical: 13, alignItems: 'center'},
-  modalBtnText: {fontSize: 14, fontWeight: '700'},
 });
 
 export default ProfileScreen;
