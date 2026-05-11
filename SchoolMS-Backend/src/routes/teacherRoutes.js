@@ -56,6 +56,12 @@ router.post('/materials',
   tc.uploadMaterial,
 );
 
+router.patch('/materials/:id',
+  param('id').isInt(),
+  [body('title').trim().notEmpty().withMessage('Title required')],
+  validateRequest,
+  tc.updateMaterial,
+);
 router.delete('/materials/:id', param('id').isInt(), validateRequest, tc.deleteMaterial);
 
 // ── Marks ─────────────────────────────────────────────────────────────────

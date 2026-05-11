@@ -20,6 +20,7 @@ import AdminComplaintsScreen       from '../screens/admin/AdminComplaintsScreen'
 import AdminComplaintDetailScreen  from '../screens/admin/AdminComplaintDetailScreen';
 import AssignTeacherScreen         from '../screens/admin/AssignTeacherScreen';
 import AdminEventsScreen           from '../screens/admin/AdminEventsScreen';
+import AdminMaterialsScreen        from '../screens/admin/AdminMaterialsScreen';
 import ProfileScreen               from '../screens/common/ProfileScreen';
 
 const Tab   = createBottomTabNavigator();
@@ -40,6 +41,7 @@ const AdminHomeStack = () => (
     <Stack.Screen name="NewConversation"        component={NewConversationScreen} />
     <Stack.Screen name="AssignTeacher"          component={AssignTeacherScreen} />
     <Stack.Screen name="AdminEvents"            component={AdminEventsScreen} />
+    <Stack.Screen name="AdminMaterials"         component={AdminMaterialsScreen} />
   </Stack.Navigator>
 );
 

@@ -317,6 +317,9 @@ const AdminDashboardScreen = ({navigation}) => {
             <ModuleCard icon="🗓️" iconBg="#FFFBE5" iconTint="#E1A800"
               title="Events" subtitle="Holidays, exams, PTM & alerts"
               onPress={() => navigation.navigate('AdminEvents')} />
+            <ModuleCard icon="🎬" iconBg="#F0EEFF" iconTint="#6C5CE7"
+              title="Materials" subtitle="View & manage all teacher uploads"
+              onPress={() => navigation.navigate('AdminMaterials')} />
           </View>
         </View>
 

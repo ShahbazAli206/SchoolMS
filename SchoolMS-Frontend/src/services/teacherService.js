@@ -30,6 +30,7 @@ export const teacherAPI = {
         if (onProgress) onProgress(Math.round((e.loaded * 100) / e.total));
       },
     }),
+  updateMaterial: (id, data) => apiClient.patch(`/teacher/materials/${id}`, data),
   deleteMaterial: id => apiClient.delete(`/teacher/materials/${id}`),
 
   // Marks

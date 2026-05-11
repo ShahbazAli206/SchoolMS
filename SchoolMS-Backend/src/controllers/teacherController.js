@@ -175,6 +175,19 @@ exports.uploadMaterial = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+exports.updateMaterial = async (req, res, next) => {
+  try {
+    const material = await Material.findByPk(req.params.id);
+    if (!material) return ApiResponse.notFound(res, 'Material not found');
+    if (req.user.role === 'teacher' && material.teacher_id !== req.user.id)
+      return ApiResponse.forbidden(res, 'You can only edit your own materials');
+
+    const {title, description} = req.body;
+    await material.update({title, description});
+    return ApiResponse.success(res, {material}, 'Material updated');
+  } catch (err) { next(err); }
+};
+
 exports.deleteMaterial = async (req, res, next) => {
   try {
     const material = await Material.findByPk(req.params.id);
