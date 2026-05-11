@@ -14,10 +14,18 @@ import {useTheme} from '../../themes/ThemeContext';
 import PageHeader from '../../components/common/PageHeader';
 import {fetchConversations, setActiveConv} from '../../redux/slices/chatSlice';
 
-const initials = name =>
-  name
-    ? name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+const normalizeTextValue = value => {
+  if (typeof value === 'string' || typeof value === 'number') return value;
+  if (value && typeof value === 'object') return value.name ?? value.id ?? JSON.stringify(value);
+  return '';
+};
+
+const initials = name => {
+  const normalized = normalizeTextValue(name);
+  return normalized
+    ? String(normalized).split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
     : '?';
+};
 
 const timeLabel = dateStr => {
   if (!dateStr) return '';
@@ -41,8 +49,10 @@ const ConvItem = ({item, currentUserId, onPress, colors, textStyles, spacing}) =
   const otherParticipant = item.type === 'direct'
     ? (item.participants || []).find(p => p.id !== currentUserId)
     : null;
-  const displayName = item.type === 'group' ? (item.name || 'Group') : (otherParticipant?.name || 'Unknown');
-  const lastMsg     = item.lastMessage;
+  const displayName = item.type === 'group'
+    ? (normalizeTextValue(item.name) || 'Group')
+    : (normalizeTextValue(otherParticipant?.name) || 'Unknown');
+  const lastMsg = item.lastMessage;
   const unread      = item.unreadCount || 0;
 
   return (

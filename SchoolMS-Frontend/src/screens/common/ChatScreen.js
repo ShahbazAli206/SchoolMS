@@ -21,8 +21,18 @@ import {launchImageLibrary} from 'react-native-image-picker';
 
 const PAGE_SIZE = 30;
 
-const initials = name =>
-  name ? name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() : '?';
+const normalizeTextValue = value => {
+  if (typeof value === 'string' || typeof value === 'number') return value;
+  if (value && typeof value === 'object') return value.name ?? value.id ?? JSON.stringify(value);
+  return '';
+};
+
+const initials = name => {
+  const normalized = normalizeTextValue(name);
+  return normalized
+    ? String(normalized).split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+    : '?';
+};
 
 const timeStr = dateStr =>
   new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
@@ -41,7 +51,9 @@ const ChatScreen = ({route, navigation}) => {
   const otherParticipant = conv?.type === 'direct'
     ? (conv?.participants || []).find(p => p.id !== currentUserId)
     : null;
-  const title = conv?.type === 'group' ? (conv?.name || 'Group') : (otherParticipant?.name || 'Chat');
+  const title = conv?.type === 'group'
+    ? (normalizeTextValue(conv?.name) || 'Group')
+    : (normalizeTextValue(otherParticipant?.name) || 'Chat');
 
   const load = useCallback((p = 1) => {
     dispatch(fetchMessages({id: convId, params: {page: p, limit: PAGE_SIZE}}));
@@ -95,7 +107,7 @@ const ChatScreen = ({route, navigation}) => {
 
   const renderMessage = useCallback(({item, index}) => {
     const isMine    = item.sender_id === currentUserId || item.sender?.id === currentUserId;
-    const senderName = item.sender?.name || '';
+    const senderName = normalizeTextValue(item.sender?.name) || '';
     const showAvatar = !isMine && (index === 0 || activeMessages[index - 1]?.sender_id !== item.sender_id);
 
     return (
