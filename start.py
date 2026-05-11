@@ -143,10 +143,10 @@ print(f"""
   ║  Metro   → http://localhost:8081             ║
   ╠══════════════════════════════════════════════╣
   ║  LOGIN CREDENTIALS                           ║
-  ║  admin@schoolms.com    / password123  (Admin)║
-  ║  john@schoolms.com     / password123  (Teacher)
-  ║  alice@schoolms.com    / password123  (Student)
-  ║  bob@schoolms.com      / password123  (Parent)║
+  ║  admin@schoolms.com    / School@123  (Admin)║
+  ║  john@schoolms.com     / School@123  (Teacher)
+  ║  alice@schoolms.com    / School@123  (Student)
+  ║  bob@schoolms.com      / School@123  (Parent)║
   ╚══════════════════════════════════════════════╝{W}
 """)
 input("  Press Enter to close this window (services keep running)...")

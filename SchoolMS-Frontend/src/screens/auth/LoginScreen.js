@@ -18,7 +18,7 @@ const LOGIN_TYPES = ['email', 'phone', 'username'];
 // DEV ONLY — remove this whole block (DEV_USERS, DEV_PASSWORD, the picker
 // modal in JSX, and the "Quick login" button) before production release.
 // ─────────────────────────────────────────────────────────────────────────────
-const DEV_PASSWORD = 'password123';
+const DEV_PASSWORD = 'School@123';
 const DEV_USERS = [
   {role: 'Admin',   name: 'Sarah Ahmed',       email: 'admin@schoolms.com'},
   {role: 'Teacher', name: 'Mr. Ali Hassan',    email: 'ali.hassan@schoolms.com'},
@@ -161,6 +161,52 @@ const LoginScreen = ({navigation}) => {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      {/* DEV ONLY — remove this Modal before production */}
+      <Modal
+        visible={showDevPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowDevPicker(false)}>
+        <TouchableOpacity
+          style={styles.devOverlay}
+          activeOpacity={1}
+          onPress={() => setShowDevPicker(false)}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {}}
+            style={[styles.devSheet, {backgroundColor: colors.surface, borderTopLeftRadius: borderRadius.xl, borderTopRightRadius: borderRadius.xl}]}>
+            <View style={styles.devHandle} />
+            <Text style={[textStyles.h4, {color: colors.textPrimary, paddingHorizontal: spacing.lg, marginBottom: spacing.sm}]}>
+              Pick a user
+            </Text>
+            <Text style={[textStyles.caption, {color: colors.textSecondary, paddingHorizontal: spacing.lg, marginBottom: spacing.md}]}>
+              Autofills email + password ({DEV_PASSWORD})
+            </Text>
+            <FlatList
+              data={DEV_USERS}
+              keyExtractor={item => item.email}
+              contentContainerStyle={{paddingBottom: spacing['2xl']}}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() => pickDevUser(item)}
+                  style={[styles.devRow, {borderBottomColor: colors.border, paddingHorizontal: spacing.lg, paddingVertical: spacing.sm}]}>
+                  <View style={[styles.devRoleDot, {backgroundColor: ROLE_COLORS[item.role] || colors.primary}]}>
+                    <Text style={{color: '#fff', fontSize: 10, fontWeight: '800'}}>{item.role[0]}</Text>
+                  </View>
+                  <View style={{flex: 1, marginLeft: spacing.md}}>
+                    <Text style={[textStyles.body1, {color: colors.textPrimary, fontWeight: '700'}]}>{item.name}</Text>
+                    <Text style={[textStyles.caption, {color: colors.textSecondary}]}>
+                      {item.role} · {item.email}
+                    </Text>
+                  </View>
+                  <Text style={{color: colors.primary, fontSize: 22, fontWeight: '300'}}>›</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -174,6 +220,14 @@ const styles = StyleSheet.create({
   errorBanner: {padding: 10},
   forgotBtn: {alignSelf: 'flex-end'},
   registerRow: {flexDirection: 'row', justifyContent: 'center'},
+
+  // DEV ONLY — remove these styles with the rest of the dev block
+  devBtn: {borderWidth: 1, borderStyle: 'dashed', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 12, alignItems: 'center'},
+  devOverlay: {flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end'},
+  devSheet: {maxHeight: '75%', paddingTop: 10},
+  devHandle: {alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: '#D1D5DB', marginBottom: 12},
+  devRow: {flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1},
+  devRoleDot: {width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center'},
 });
 
 export default LoginScreen;
