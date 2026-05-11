@@ -111,12 +111,42 @@ const TeacherNavigator = () => {
           <TabIcon label={ICON_MAP[route.name] || '•'} color={color} focused={focused} />
         ),
       })}>
-      <Tab.Screen name="Home"        component={TeacherHomeStack}       options={{title: 'Dashboard'}} />
+      <Tab.Screen
+        name="Home"
+        component={TeacherHomeStack}
+        options={{title: 'Dashboard'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Home', {screen: 'TeacherDashboard'});
+          },
+        })}
+      />
       <Tab.Screen name="Assignments" component={TeacherAssignmentStack} options={{title: 'Assignments'}} />
       <Tab.Screen name="Attendance"  component={AttendanceScreen}       options={{title: 'Attendance'}} />
       <Tab.Screen name="Marks"       component={MarksScreen}            options={{title: 'Marks'}} />
-      <Tab.Screen name="Complaints"  component={ComplaintsStack}        options={{title: 'Complaints'}} />
-      <Tab.Screen name="Chat"        component={ChatStack}              options={{title: 'Chat'}} />
+      <Tab.Screen
+        name="Complaints"
+        component={ComplaintsStack}
+        options={{title: 'Complaints'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Complaints', {screen: 'TeacherComplaints'});
+          },
+        })}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        options={{title: 'Chat'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Chat', {screen: 'Conversations'});
+          },
+        })}
+      />
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}

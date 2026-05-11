@@ -96,8 +96,28 @@ const ParentNavigator = () => {
       <Tab.Screen name="Home"       component={ParentDashboardScreen}     options={{title: 'Dashboard'}} />
       <Tab.Screen name="Progress"   component={ParentChildProgressScreen} options={{title: 'Progress'}} />
       <Tab.Screen name="Fees"       component={ParentFeesScreen}          options={{title: 'Fees'}} />
-      <Tab.Screen name="Complaints" component={ComplaintsStack}            options={{title: 'Complaints'}} />
-      <Tab.Screen name="Chat"       component={ChatStack}                 options={{title: 'Chat'}} />
+      <Tab.Screen
+        name="Complaints"
+        component={ComplaintsStack}
+        options={{title: 'Complaints'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Complaints', {screen: 'ParentComplaints'});
+          },
+        })}
+      />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        options={{title: 'Chat'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Chat', {screen: 'Conversations'});
+          },
+        })}
+      />
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}

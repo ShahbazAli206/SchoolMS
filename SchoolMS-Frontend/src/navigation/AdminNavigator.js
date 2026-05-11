@@ -131,8 +131,26 @@ const AdminNavigator = () => (
   <Tab.Navigator
     screenOptions={{headerShown: false}}
     tabBar={props => <CustomTabBar {...props} />}>
-    <Tab.Screen name="Home"      component={AdminHomeStack} />
-    <Tab.Screen name="Dashboard" component={DashboardStack} />
+    <Tab.Screen
+      name="Home"
+      component={AdminHomeStack}
+      listeners={({navigation}) => ({
+        tabPress: e => {
+          e.preventDefault();
+          navigation.navigate('Home', {screen: 'AdminDashboard'});
+        },
+      })}
+    />
+    <Tab.Screen
+      name="Dashboard"
+      component={DashboardStack}
+      listeners={({navigation}) => ({
+        tabPress: e => {
+          e.preventDefault();
+          navigation.navigate('Dashboard', {screen: 'UserManagementMain'});
+        },
+      })}
+    />
     <Tab.Screen name="QuickAdd"  component={Empty} options={{tabBarButton: () => null}} />
     <Tab.Screen name="Reports"   component={ReportsStack} />
     <Tab.Screen name="Settings"  component={ProfileScreen} />

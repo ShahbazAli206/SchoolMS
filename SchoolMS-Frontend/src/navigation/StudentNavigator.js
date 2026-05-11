@@ -103,7 +103,17 @@ const StudentNavigator = () => {
       <Tab.Screen name="Materials"    component={StudentMaterialsScreen}   options={{title: 'Materials'}} />
       <Tab.Screen name="MyAttendance" component={StudentAttendanceScreen}  options={{title: 'Attendance'}} />
       <Tab.Screen name="Fees"         component={StudentFeesScreen}        options={{title: 'Fees'}} />
-      <Tab.Screen name="Chat"         component={ChatStack}                options={{title: 'Chat'}} />
+      <Tab.Screen
+        name="Chat"
+        component={ChatStack}
+        options={{title: 'Chat'}}
+        listeners={({navigation}) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Chat', {screen: 'Conversations'});
+          },
+        })}
+      />
       <Tab.Screen
         name="Notifications"
         component={NotificationsScreen}
