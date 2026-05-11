@@ -1,12 +1,13 @@
 const router = require('express').Router();
 const {body, param, query} = require('express-validator');
 const adminController = require('../controllers/adminController');
+const ctCtrl = require('../controllers/classTeacherController');
 const {protect, authorize} = require('../middlewares/authMiddleware');
 const validateRequest = require('../middlewares/validateRequest');
 
 // All admin routes require auth + admin role
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'principal'));
 
 // ── Dashboard ─────────────────────────────────────────────────────────────
 router.get('/stats', adminController.getDashboardStats);
@@ -81,10 +82,17 @@ router.patch('/users/:userId/toggle-status',
 router.patch('/users/:userId/role',
   [
     param('userId').isInt(),
-    body('role').isIn(['admin', 'teacher', 'student', 'parent', 'staff']),
+    body('role').isIn(['admin', 'principal', 'teacher', 'student', 'parent', 'staff']),
   ],
   validateRequest,
   adminController.assignRole,
 );
+
+// ── Class-Teacher assignments ─────────────────────────────────────────────
+router.get('/classes',                              ctCtrl.listClasses);
+router.get('/classes/:classId/teachers',            ctCtrl.getClassTeachers);
+router.get('/teachers/:teacherId/classes',          ctCtrl.getTeacherClasses);
+router.post('/classes/:classId/teachers',           ctCtrl.assignTeachers);
+router.delete('/class-teachers/:assignmentId',      ctCtrl.removeAssignment);
 
 module.exports = router;

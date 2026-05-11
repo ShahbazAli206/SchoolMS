@@ -1,224 +1,208 @@
 import React, {useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Switch,
-  Alert,
-  ActivityIndicator,
-  Modal,
+  View, Text, StyleSheet, ScrollView,
+  TouchableOpacity, TextInput, Switch,
+  Alert, ActivityIndicator, Modal,
 } from 'react-native';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useTheme} from '../../themes/ThemeContext';
 import {logoutUser} from '../../redux/slices/authSlice';
 import {authAPI} from '../../services/authService';
+import PageHeader from '../../components/common/PageHeader';
 
-const ROLE_COLORS = {
-  admin:   '#e74c3c',
-  teacher: '#2980b9',
-  student: '#27ae60',
-  parent:  '#8e44ad',
-  staff:   '#e67e22',
+const ROLE_META = {
+  admin:   {color: '#A29BFE', bg: 'rgba(162,155,254,0.15)', label: 'Administrator', icon: '👑'},
+  teacher: {color: '#81ECEC', bg: 'rgba(129,236,236,0.15)', label: 'Teacher',       icon: '👨‍🏫'},
+  student: {color: '#55EFC4', bg: 'rgba(85,239,196,0.15)',  label: 'Student',       icon: '🎓'},
+  parent:  {color: '#FDCB6E', bg: 'rgba(253,203,110,0.15)',label: 'Parent',        icon: '👨‍👩‍👧'},
+  staff:   {color: '#B2BEC3', bg: 'rgba(178,190,195,0.15)',label: 'Staff',         icon: '🏫'},
 };
 
 const initials = name =>
   name ? name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() : 'U';
 
-const InfoRow = ({label, value, colors, textStyles}) => (
+const GlassCard = ({children, style}) => {
+  const {colors, borderRadius} = useTheme();
+  return (
+    <View style={[
+      styles.glassCard,
+      {
+        backgroundColor: colors.surface,
+        borderRadius: borderRadius.xl,
+        borderColor: colors.border,
+      },
+      style,
+    ]}>
+      {children}
+    </View>
+  );
+};
+
+const InfoRow = ({icon, label, value, colors}) => (
   <View style={styles.infoRow}>
-    <Text style={[textStyles.caption, {color: colors.textSecondary, width: 80}]}>{label}</Text>
-    <Text style={[textStyles.body2, {color: colors.textPrimary, flex: 1}]}>{value || '—'}</Text>
+    <Text style={styles.infoIcon}>{icon}</Text>
+    <View style={{flex: 1}}>
+      <Text style={[styles.infoLabel, {color: colors.textTertiary}]}>{label}</Text>
+      <Text style={[styles.infoValue, {color: colors.textPrimary}]}>{value || '—'}</Text>
+    </View>
   </View>
 );
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
-  const {colors, spacing, borderRadius, textStyles, isDark, toggleTheme, shadow} = useTheme();
+  const {colors, spacing, borderRadius, textStyles, isDark, toggleTheme} = useTheme();
   const {user} = useSelector(s => s.auth);
 
-  const [showPwForm, setShowPwForm]   = useState(false);
-  const [currentPw,  setCurrentPw]   = useState('');
-  const [newPw,      setNewPw]       = useState('');
-  const [confirmPw,  setConfirmPw]   = useState('');
-  const [pwLoading,  setPwLoading]   = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const handleBack = () => {
+    if (navigation?.canGoBack?.()) navigation.goBack();
+    else navigation?.getParent?.()?.navigate?.('Home');
+  };
 
-  const roleColor = ROLE_COLORS[user?.role] || colors.primary;
+  const [showPwForm, setShowPwForm] = useState(false);
+  const [currentPw,  setCurrentPw] = useState('');
+  const [newPw,      setNewPw]     = useState('');
+  const [confirmPw,  setConfirmPw] = useState('');
+  const [pwLoading,  setPwLoading] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+
+  const meta = ROLE_META[user?.role] || ROLE_META.staff;
 
   const handleChangePassword = async () => {
-    if (!currentPw || !newPw || !confirmPw) {
-      Alert.alert('Validation', 'All fields are required'); return;
-    }
-    if (newPw.length < 6) {
-      Alert.alert('Validation', 'New password must be at least 6 characters'); return;
-    }
-    if (newPw !== confirmPw) {
-      Alert.alert('Validation', 'Passwords do not match'); return;
-    }
+    if (!currentPw || !newPw || !confirmPw) { Alert.alert('Validation', 'All fields are required'); return; }
+    if (newPw.length < 6) { Alert.alert('Validation', 'New password must be at least 6 characters'); return; }
+    if (newPw !== confirmPw) { Alert.alert('Validation', 'Passwords do not match'); return; }
     setPwLoading(true);
     try {
       await authAPI.changePassword({currentPassword: currentPw, newPassword: newPw});
       Alert.alert('Success', 'Password changed successfully');
-      setCurrentPw(''); setNewPw(''); setConfirmPw('');
-      setShowPwForm(false);
+      setCurrentPw(''); setNewPw(''); setConfirmPw(''); setShowPwForm(false);
     } catch (e) {
       Alert.alert('Error', e.response?.data?.message || 'Failed to change password');
-    } finally {
-      setPwLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    setShowLogoutModal(true);
-  };
-
-  const confirmLogout = () => {
-    setShowLogoutModal(false);
-    dispatch(logoutUser());
-    // Navigation will be handled automatically by RootNavigator when isAuthenticated becomes false
-  };
-
-  const cancelLogout = () => {
-    setShowLogoutModal(false);
-  };
-
-  const inputStyle = {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: borderRadius.md,
-    color: colors.textPrimary,
+    } finally { setPwLoading(false); }
   };
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      <View style={[styles.header, {backgroundColor: colors.headerBg, padding: spacing.base, paddingTop: spacing.base + insets.top}]}>
-        <Text style={[textStyles.h5, {color: colors.white}]}>Profile</Text>
-      </View>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <PageHeader title="Profile" showBack onBackPress={handleBack} />
 
-      <ScrollView contentContainerStyle={{padding: spacing.base, paddingBottom: 60}}>
-        {/* Avatar + name */}
-        <View style={styles.avatarSection}>
-          <View style={[styles.avatar, {backgroundColor: roleColor}]}>
-            <Text style={styles.avatarText}>{initials(user?.name)}</Text>
+      <ScrollView
+        contentContainerStyle={[styles.scroll, {paddingHorizontal: spacing.base, paddingBottom: 80}]}
+        showsVerticalScrollIndicator={false}>
+
+        {/* ── AVATAR CARD ── */}
+        <View style={[styles.avatarCard, {backgroundColor: colors.primary, borderRadius: borderRadius.xl}]}>
+          <View style={[styles.avatarRing, {borderColor: meta.color}]}>
+            <View style={[styles.avatar, {backgroundColor: meta.bg}]}>
+              <Text style={styles.avatarIcon}>{meta.icon}</Text>
+              <Text style={[styles.avatarInitials, {color: meta.color}]}>{initials(user?.name)}</Text>
+            </View>
           </View>
-          <Text style={[textStyles.h4, {color: colors.textPrimary, marginTop: spacing.sm}]}>
-            {user?.name || 'User'}
-          </Text>
-          <View style={[styles.roleBadge, {backgroundColor: roleColor + '20', borderColor: roleColor}]}>
-            <Text style={[textStyles.caption, {color: roleColor, fontWeight: '700', textTransform: 'uppercase'}]}>
-              {user?.role}
-            </Text>
+          <Text style={styles.avatarName}>{user?.name || 'User'}</Text>
+          <View style={[styles.roleBadge, {backgroundColor: meta.bg, borderColor: meta.color}]}>
+            <Text style={[styles.roleBadgeText, {color: meta.color}]}>{meta.label}</Text>
           </View>
         </View>
 
-        {/* Info card */}
-        <View style={[styles.card, {backgroundColor: colors.surface, borderRadius: borderRadius.md, marginTop: spacing.base}]}>
-          <Text style={[textStyles.body2, {color: colors.textSecondary, marginBottom: spacing.sm, fontWeight: '600'}]}>
-            Account Info
-          </Text>
-          <InfoRow label="Email"    value={user?.email}    colors={colors} textStyles={textStyles} />
-          <InfoRow label="Phone"    value={user?.phone}    colors={colors} textStyles={textStyles} />
-          <InfoRow label="Username" value={user?.username} colors={colors} textStyles={textStyles} />
-        </View>
+        {/* ── ACCOUNT INFO ── */}
+        <GlassCard style={{marginTop: spacing.md}}>
+          <Text style={[styles.cardTitle, {color: colors.textSecondary}]}>Account Info</Text>
+          <InfoRow icon="✉️" label="Email"    value={user?.email}    colors={colors} />
+          <InfoRow icon="📱" label="Phone"    value={user?.phone}    colors={colors} />
+          <InfoRow icon="👤" label="Username" value={user?.username} colors={colors} />
+        </GlassCard>
 
-        {/* Dark mode toggle */}
-        <View style={[styles.card, {backgroundColor: colors.surface, borderRadius: borderRadius.md, marginTop: spacing.sm}]}>
+        {/* ── DARK MODE ── */}
+        <GlassCard style={{marginTop: spacing.sm}}>
           <View style={styles.settingRow}>
-            <View>
-              <Text style={[textStyles.body1, {color: colors.textPrimary}]}>Dark Mode</Text>
-              <Text style={[textStyles.caption, {color: colors.textSecondary}]}>
-                {isDark ? 'Currently dark theme' : 'Currently light theme'}
-              </Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+              <Text style={{fontSize: 20}}>{isDark ? '🌙' : '☀️'}</Text>
+              <View>
+                <Text style={[styles.settingLabel, {color: colors.textPrimary}]}>Dark Mode</Text>
+                <Text style={[styles.settingHint, {color: colors.textTertiary}]}>
+                  {isDark ? 'Dark theme active' : 'Light theme active'}
+                </Text>
+              </View>
             </View>
             <Switch
               value={isDark}
               onValueChange={toggleTheme}
-              trackColor={{false: colors.border, true: colors.primary}}
+              trackColor={{false: colors.border, true: '#6C5CE7'}}
               thumbColor="#fff"
             />
           </View>
-        </View>
+        </GlassCard>
 
-        {/* Change password */}
-        <View style={[styles.card, {backgroundColor: colors.surface, borderRadius: borderRadius.md, marginTop: spacing.sm}]}>
-          <TouchableOpacity
-            style={styles.settingRow}
-            onPress={() => setShowPwForm(p => !p)}>
-            <Text style={[textStyles.body1, {color: colors.textPrimary}]}>Change Password</Text>
-            <Text style={[textStyles.body2, {color: colors.textSecondary}]}>{showPwForm ? '▲' : '▼'}</Text>
+        {/* ── CHANGE PASSWORD ── */}
+        <GlassCard style={{marginTop: spacing.sm}}>
+          <TouchableOpacity style={styles.settingRow} onPress={() => setShowPwForm(p => !p)}>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+              <Text style={{fontSize: 20}}>🔐</Text>
+              <Text style={[styles.settingLabel, {color: colors.textPrimary}]}>Change Password</Text>
+            </View>
+            <Text style={[styles.chevron, {color: colors.textTertiary}]}>{showPwForm ? '▲' : '▼'}</Text>
           </TouchableOpacity>
 
           {showPwForm && (
-            <View style={{marginTop: spacing.sm}}>
+            <View style={{marginTop: 14}}>
               {[
                 {label: 'Current password', value: currentPw, set: setCurrentPw},
                 {label: 'New password',     value: newPw,     set: setNewPw},
                 {label: 'Confirm password', value: confirmPw, set: setConfirmPw},
               ].map(({label, value, set}) => (
-                <View key={label} style={{marginBottom: spacing.sm}}>
-                  <Text style={[textStyles.caption, {color: colors.textSecondary, marginBottom: 4}]}>{label}</Text>
+                <View key={label} style={{marginBottom: 10}}>
+                  <Text style={[styles.inputLabel, {color: colors.textSecondary}]}>{label}</Text>
                   <TextInput
-                    style={[styles.input, inputStyle]}
+                    style={[styles.input, {backgroundColor: colors.inputBg, borderColor: colors.border, color: colors.textPrimary, borderRadius: borderRadius.lg}]}
                     value={value}
                     onChangeText={set}
                     secureTextEntry
                     placeholder={label}
-                    placeholderTextColor={colors.textSecondary}
+                    placeholderTextColor={colors.textTertiary}
                   />
                 </View>
               ))}
               <TouchableOpacity
                 onPress={handleChangePassword}
                 disabled={pwLoading}
-                style={[styles.pwBtn, {backgroundColor: pwLoading ? colors.border : colors.primary, borderRadius: borderRadius.md}]}>
+                style={[styles.updateBtn, {backgroundColor: '#6C5CE7', borderRadius: borderRadius.lg}]}>
                 {pwLoading
                   ? <ActivityIndicator color="#fff" size="small" />
-                  : <Text style={[textStyles.body2, {color: colors.white, fontWeight: '600'}]}>Update Password</Text>}
+                  : <Text style={styles.updateBtnText}>Update Password</Text>}
               </TouchableOpacity>
             </View>
           )}
-        </View>
+        </GlassCard>
 
-        {/* Logout */}
+        {/* ── LOGOUT ── */}
         <TouchableOpacity
-          onPress={handleLogout}
-          style={[styles.logoutBtn, {backgroundColor: colors.error, borderRadius: borderRadius.md, marginTop: spacing.lg}]}>
-          <Text style={[textStyles.body1, {color: colors.white, fontWeight: '600'}]}>Logout</Text>
+          onPress={() => setShowLogout(true)}
+          style={[styles.logoutBtn, {borderRadius: borderRadius.xl, borderColor: '#A29BFE', backgroundColor: 'rgba(108,92,231,0.08)'}]}>
+          <Text style={{fontSize: 20}}>🚪</Text>
+          <Text style={[styles.logoutText, {color: '#A29BFE'}]}>Sign Out</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Logout Confirmation Modal */}
-      <Modal
-        visible={showLogoutModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={cancelLogout}>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, {backgroundColor: isDark ? colors.glassBg : 'rgba(255, 255, 255, 0.95)', borderRadius: borderRadius.xl, borderWidth: 1, borderColor: colors.glassBorder, ...shadow.lg}]}>
-            <Text style={[textStyles.h5, {color: colors.textPrimary, marginBottom: spacing.sm, textAlign: 'center'}]}>
-              Confirm Logout
+      {/* ── LOGOUT MODAL ── */}
+      <Modal visible={showLogout} transparent animationType="fade" onRequestClose={() => setShowLogout(false)}>
+        <View style={styles.overlay}>
+          <View style={[styles.modal, {backgroundColor: colors.surface, borderRadius: borderRadius.xl}]}>
+            <Text style={{fontSize: 36, textAlign: 'center', marginBottom: 10}}>👋</Text>
+            <Text style={[styles.modalTitle, {color: colors.textPrimary}]}>Sign Out?</Text>
+            <Text style={[styles.modalSub, {color: colors.textSecondary}]}>
+              You will be logged out of your account.
             </Text>
-            <Text style={[textStyles.body2, {color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg}]}>
-              Are you sure you want to logout from your account?
-            </Text>
-
-            <View style={styles.modalButtons}>
+            <View style={styles.modalBtns}>
               <TouchableOpacity
-                onPress={cancelLogout}
-                style={[styles.modalBtn, styles.cancelBtn, {backgroundColor: colors.surface, borderRadius: borderRadius.lg, borderWidth: 1, borderColor: colors.border}]}>
-                <Text style={[textStyles.body1, {color: colors.textPrimary, fontWeight: '600'}]}>Cancel</Text>
+                onPress={() => setShowLogout(false)}
+                style={[styles.modalBtn, {backgroundColor: colors.inputBg, borderRadius: borderRadius.lg}]}>
+                <Text style={[styles.modalBtnText, {color: colors.textPrimary}]}>Cancel</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
-                onPress={confirmLogout}
-                style={[styles.modalBtn, styles.logoutConfirmBtn, {backgroundColor: colors.error, borderRadius: borderRadius.lg}]}>
-                <Text style={[textStyles.body1, {color: colors.white, fontWeight: '700'}]}>Logout</Text>
+                onPress={() => { setShowLogout(false); dispatch(logoutUser()); }}
+                style={[styles.modalBtn, {backgroundColor: '#6C5CE7', borderRadius: borderRadius.lg}]}>
+                <Text style={[styles.modalBtnText, {color: '#fff'}]}>Sign Out</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -229,24 +213,54 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container:     {flex: 1},
-  header:        {flexDirection: 'row', alignItems: 'center'},
-  avatarSection: {alignItems: 'center', paddingVertical: 24},
-  avatar:        {width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center'},
-  avatarText:    {color: '#fff', fontSize: 32, fontWeight: '800'},
-  roleBadge:     {marginTop: 8, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, borderWidth: 1},
-  card:          {padding: 16},
-  infoRow:       {flexDirection: 'row', alignItems: 'center', paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e0e0e0'},
-  settingRow:    {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  input:         {borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10, fontSize: 14},
-  pwBtn:         {paddingVertical: 12, alignItems: 'center', marginTop: 4},
-  logoutBtn:     {paddingVertical: 14, alignItems: 'center'},
-  modalOverlay:  {flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center', padding: 20},
-  modalContent:  {margin: 20, padding: 24, maxWidth: 320, width: '90%', ...{shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: {width: 0, height: 5}, elevation: 10}},
-  modalButtons:  {flexDirection: 'row', gap: 12},
-  modalBtn:      {flex: 1, paddingVertical: 12, alignItems: 'center'},
-  cancelBtn:     {},
-  logoutConfirmBtn: {},
+  container:    {flex: 1},
+  header:       {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingBottom: 20, overflow: 'hidden'},
+  backBtn:      {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
+  backChevron:  {color: '#FFFFFF', fontSize: 30, fontWeight: '300', marginTop: -3},
+  headerTitle:  {flex: 1, color: '#FFFFFF', fontSize: 18, fontWeight: '800', textAlign: 'center'},
+  heroBubble:   {position: 'absolute', width: 100, height: 100, borderRadius: 50, backgroundColor: 'rgba(162,155,254,0.12)', top: -20, right: -10},
+  scroll:       {paddingTop: 0},
+
+  avatarCard:   {alignItems: 'center', paddingVertical: 28, paddingHorizontal: 20, marginTop: 0},
+  avatarRing:   {width: 96, height: 96, borderRadius: 48, borderWidth: 3, alignItems: 'center', justifyContent: 'center'},
+  avatar:       {width: 86, height: 86, borderRadius: 43, alignItems: 'center', justifyContent: 'center'},
+  avatarIcon:   {fontSize: 20, position: 'absolute', top: 8, right: 10},
+  avatarInitials:{fontSize: 28, fontWeight: '800', marginTop: 10},
+  avatarName:   {color: '#FFFFFF', fontSize: 18, fontWeight: '800', marginTop: 12},
+  roleBadge:    {marginTop: 6, paddingHorizontal: 14, paddingVertical: 4, borderRadius: 20, borderWidth: 1},
+  roleBadgeText:{fontSize: 11, fontWeight: '700', textTransform: 'uppercase'},
+
+  glassCard:    {padding: 16, borderWidth: 1, marginHorizontal: 0},
+
+  cardTitle:    {fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 12},
+
+  infoRow:      {flexDirection: 'row', alignItems: 'center', paddingVertical: 10, gap: 12,
+                 borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(0,0,0,0.06)'},
+  infoIcon:     {fontSize: 18, width: 26, textAlign: 'center'},
+  infoLabel:    {fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5},
+  infoValue:    {fontSize: 14, fontWeight: '600', marginTop: 1},
+
+  settingRow:   {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  settingLabel: {fontSize: 14, fontWeight: '600'},
+  settingHint:  {fontSize: 11, marginTop: 1},
+  chevron:      {fontSize: 12},
+
+  inputLabel:   {fontSize: 12, fontWeight: '600', marginBottom: 4},
+  input:        {borderWidth: 1, paddingHorizontal: 14, paddingVertical: 11, fontSize: 14},
+  updateBtn:    {paddingVertical: 12, alignItems: 'center', marginTop: 4},
+  updateBtnText:{color: '#fff', fontSize: 14, fontWeight: '700'},
+
+  logoutBtn:    {flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+                 gap: 10, paddingVertical: 14, marginTop: 16, borderWidth: 1.5},
+  logoutText:   {fontSize: 15, fontWeight: '700'},
+
+  overlay:      {flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24},
+  modal:        {padding: 24, width: '100%', maxWidth: 320, alignItems: 'center'},
+  modalTitle:   {fontSize: 18, fontWeight: '800', marginBottom: 8},
+  modalSub:     {fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20},
+  modalBtns:    {flexDirection: 'row', gap: 12, width: '100%'},
+  modalBtn:     {flex: 1, paddingVertical: 13, alignItems: 'center'},
+  modalBtnText: {fontSize: 14, fontWeight: '700'},
 });
 
 export default ProfileScreen;

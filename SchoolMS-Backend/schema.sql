@@ -21,11 +21,12 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `roles` (`name`, `description`) VALUES
-  ('admin',   'Full system access'),
-  ('staff',   'School staff member'),
-  ('teacher', 'Class teacher'),
-  ('student', 'Enrolled student'),
-  ('parent',  'Parent or guardian');
+  ('admin',     'Full system access'),
+  ('principal', 'School principal'),
+  ('staff',     'School staff member'),
+  ('teacher',   'Class teacher'),
+  ('student',   'Enrolled student'),
+  ('parent',    'Parent or guardian');
 
 -- ============================================================
 -- 2. users
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `phone`               VARCHAR(20)     NULL,
   `username`            VARCHAR(50)     NULL,
   `password`            VARCHAR(255)    NOT NULL,
-  `role`                ENUM('admin','staff','teacher','student','parent') NOT NULL DEFAULT 'student',
+  `role`                ENUM('admin','principal','staff','teacher','student','parent') NOT NULL DEFAULT 'student',
   `is_active`           TINYINT(1)      NOT NULL DEFAULT 1,
   `fcm_token`           TEXT            NULL,
   `profile_image`       VARCHAR(500)    NULL,
@@ -365,25 +366,60 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 -- 18. complaints
 -- ============================================================
 CREATE TABLE IF NOT EXISTS `complaints` (
-  `id`           INT UNSIGNED    NOT NULL AUTO_INCREMENT,
-  `parent_id`    INT UNSIGNED    NOT NULL,
-  `student_id`   INT UNSIGNED    NULL,
-  `title`        VARCHAR(200)    NOT NULL,
-  `description`  TEXT            NOT NULL,
-  `image_url`    VARCHAR(500)    NULL,
-  `status`       ENUM('pending','in_review','resolved','rejected') NOT NULL DEFAULT 'pending',
-  `admin_reply`  TEXT            NULL,
-  `resolved_by`  INT UNSIGNED    NULL,
-  `resolved_at`  DATETIME        NULL,
-  `created_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id`               INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `submitter_id`     INT UNSIGNED    NOT NULL,
+  `parent_id`        INT UNSIGNED    NULL,
+  `student_id`       INT UNSIGNED    NULL,
+  `complaint_type`   ENUM('parent_to_school','teacher_to_parent') NOT NULL DEFAULT 'parent_to_school',
+  `tagged_role`      ENUM('admin','principal','staff','teacher','parent') NULL,
+  `tagged_user_id`   INT UNSIGNED    NULL,
+  `target_parent_id` INT UNSIGNED    NULL,
+  `title`            VARCHAR(200)    NOT NULL,
+  `description`      TEXT            NOT NULL,
+  `image_url`        VARCHAR(500)    NULL,
+  `status`           ENUM('pending','in_review','resolved','rejected') NOT NULL DEFAULT 'pending',
+  `admin_reply`      TEXT            NULL,
+  `resolved_by`      INT UNSIGNED    NULL,
+  `resolved_at`      DATETIME        NULL,
+  `created_at`       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_complaints_parent_id`  (`parent_id`),
-  KEY `idx_complaints_student_id` (`student_id`),
-  KEY `idx_complaints_status`     (`status`),
-  CONSTRAINT `fk_complaints_parent`   FOREIGN KEY (`parent_id`)   REFERENCES `users`    (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_complaints_student`  FOREIGN KEY (`student_id`)  REFERENCES `students` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_complaints_resolver` FOREIGN KEY (`resolved_by`) REFERENCES `users`    (`id`) ON DELETE SET NULL
+  KEY `idx_complaints_submitter_id`  (`submitter_id`),
+  KEY `idx_complaints_parent_id`     (`parent_id`),
+  KEY `idx_complaints_student_id`    (`student_id`),
+  KEY `idx_complaints_status`        (`status`),
+  KEY `idx_complaints_type`          (`complaint_type`),
+  KEY `idx_complaints_tagged_role`   (`tagged_role`),
+  KEY `idx_complaints_tagged_user`   (`tagged_user_id`),
+  KEY `idx_complaints_target_parent` (`target_parent_id`),
+  CONSTRAINT `fk_complaints_submitter`   FOREIGN KEY (`submitter_id`)     REFERENCES `users`    (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_complaints_parent`      FOREIGN KEY (`parent_id`)        REFERENCES `users`    (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_complaints_student`     FOREIGN KEY (`student_id`)       REFERENCES `students` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_complaints_resolver`    FOREIGN KEY (`resolved_by`)      REFERENCES `users`    (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_complaints_tagged_user` FOREIGN KEY (`tagged_user_id`)   REFERENCES `users`    (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_complaints_target_par`  FOREIGN KEY (`target_parent_id`) REFERENCES `users`    (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 18b. class_teachers  (many-to-many: teacher × class × subject)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `class_teachers` (
+  `id`         INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `class_id`   INT UNSIGNED    NOT NULL,
+  `teacher_id` INT UNSIGNED    NOT NULL,
+  `subject_id` INT UNSIGNED    NULL,
+  `role`       ENUM('class_teacher','subject_teacher') NOT NULL DEFAULT 'subject_teacher',
+  `is_active`  TINYINT(1)      NOT NULL DEFAULT 1,
+  `created_at` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_class_teacher_subject_role` (`class_id`, `teacher_id`, `subject_id`, `role`),
+  KEY `idx_class_teachers_class_id`   (`class_id`),
+  KEY `idx_class_teachers_teacher_id` (`teacher_id`),
+  KEY `idx_class_teachers_subject_id` (`subject_id`),
+  CONSTRAINT `fk_class_teachers_class`   FOREIGN KEY (`class_id`)   REFERENCES `classes`  (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_class_teachers_teacher` FOREIGN KEY (`teacher_id`) REFERENCES `users`    (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_class_teachers_subject` FOREIGN KEY (`subject_id`) REFERENCES `subjects` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
@@ -435,6 +471,30 @@ CREATE TABLE IF NOT EXISTS `messages` (
   KEY `idx_messages_sender_id`            (`sender_id`),
   CONSTRAINT `fk_messages_conversation` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_messages_sender`        FOREIGN KEY (`sender_id`)       REFERENCES `users`         (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 22. events  (school calendar / announcements with schedule)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `events` (
+  `id`          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `title`       VARCHAR(200)    NOT NULL,
+  `description` TEXT            NULL,
+  `event_type`  ENUM('holiday','exam','meeting','event','reminder','other') NOT NULL DEFAULT 'event',
+  `audience`    ENUM('all','students','teachers','parents','staff') NOT NULL DEFAULT 'all',
+  `start_date`  DATETIME        NOT NULL,
+  `end_date`    DATETIME        NULL,
+  `location`    VARCHAR(200)    NULL,
+  `is_active`   TINYINT(1)      NOT NULL DEFAULT 1,
+  `created_by`  INT UNSIGNED    NULL,
+  `created_at`  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_events_type`       (`event_type`),
+  KEY `idx_events_audience`   (`audience`),
+  KEY `idx_events_start_date` (`start_date`),
+  KEY `idx_events_active`     (`is_active`),
+  CONSTRAINT `fk_events_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================

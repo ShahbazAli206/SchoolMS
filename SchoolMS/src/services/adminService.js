@@ -24,4 +24,11 @@ export const adminAPI = {
   deleteUser: id => apiClient.delete(`/users/${id}`),
   toggleUserStatus: userId => apiClient.patch(`/admin/users/${userId}/toggle-status`),
   assignRole: (userId, role) => apiClient.patch(`/admin/users/${userId}/role`, {role}),
+
+  // ── Class-Teacher assignments ─────────────────────────────────────────
+  listClasses:           ()                        => apiClient.get('/admin/classes'),
+  getClassTeachers:      classId                   => apiClient.get(`/admin/classes/${classId}/teachers`),
+  getTeacherClasses:     teacherId                 => apiClient.get(`/admin/teachers/${teacherId}/classes`),
+  assignTeachers:        (classId, payload)        => apiClient.post(`/admin/classes/${classId}/teachers`, payload),
+  removeAssignment:      assignmentId              => apiClient.delete(`/admin/class-teachers/${assignmentId}`),
 };

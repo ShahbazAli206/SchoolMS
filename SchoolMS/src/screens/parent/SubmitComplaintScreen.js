@@ -19,6 +19,7 @@ const SubmitComplaintScreen = ({navigation}) => {
   const [description, setDesc]      = useState('');
   const [selectedChild, setChild]   = useState(null);
   const [image,      setImage]      = useState(null);
+  const [taggedRole, setTaggedRole] = useState(null);
 
   useEffect(() => { dispatch(fetchChildren()); }, [dispatch]);
 
@@ -58,6 +59,7 @@ const SubmitComplaintScreen = ({navigation}) => {
     formData.append('title',       title.trim());
     formData.append('description', description.trim());
     if (selectedChild) formData.append('student_id', String(selectedChild.id));
+    if (taggedRole)    formData.append('tagged_role', taggedRole);
     if (image) {
       formData.append('image', {
         uri:  image.uri,
@@ -153,6 +155,39 @@ const SubmitComplaintScreen = ({navigation}) => {
               ))}
             </View>
           </>
+        )}
+
+        {/* Tag to */}
+        <Text style={[textStyles.body2, {color: colors.textSecondary, marginTop: spacing.base, marginBottom: 8}]}>
+          Send complaint to
+        </Text>
+        <View style={styles.chips}>
+          {[
+            {key: null,         label: 'Admin (default)',  emoji: '👤'},
+            {key: 'principal',  label: 'Principal',        emoji: '🎓'},
+            {key: 'staff',      label: 'Staff',            emoji: '💼'},
+            {key: 'teacher',    label: "Child's teacher",  emoji: '👨‍🏫'},
+          ].map(opt => {
+            const active = taggedRole === opt.key;
+            return (
+              <TouchableOpacity
+                key={String(opt.key)}
+                onPress={() => setTaggedRole(opt.key)}
+                style={[styles.chip, {
+                  backgroundColor: active ? colors.primary : colors.surface,
+                  borderColor: active ? colors.primary : colors.border,
+                }]}>
+                <Text style={[textStyles.caption, {color: active ? colors.white : colors.textSecondary}]}>
+                  {opt.emoji} {opt.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {taggedRole === 'teacher' && !selectedChild && (
+          <Text style={{color: colors.warning, fontSize: 11, marginTop: 6}}>
+            Tip: select a child above so the right teacher receives it.
+          </Text>
         )}
 
         {/* Image attachment */}

@@ -1,44 +1,47 @@
 import React, {useEffect, useCallback} from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  TouchableOpacity, RefreshControl, ActivityIndicator,
+  TouchableOpacity, RefreshControl, ActivityIndicator, StatusBar,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import {useTheme} from '../../themes/ThemeContext';
 import {fetchTeacherStats, fetchMyClasses} from '../../redux/slices/teacherSlice';
 
-const StatCard = ({label, value, icon, faded, accent, onPress}) => {
-  const {colors, spacing, borderRadius, textStyles, shadow} = useTheme();
+const STAT_CONFIG = [
+  {key: 'myClasses',             label: 'My Classes',       icon: '🏫', bg: '#6C5CE7'},
+  {key: 'totalAssignments',      label: 'Assignments',      icon: '📝', bg: '#00B894'},
+  {key: 'dueSoonAssignments',    label: 'Due This Week',    icon: '⏰', bg: '#FF7675'},
+  {key: 'todayAttendanceMarked', label: "Today Attendance", icon: '✅', bg: '#FDCB6E'},
+];
+
+const StatCard = ({label, value, icon, bg}) => {
+  const {borderRadius} = useTheme();
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.85}
-      style={[
-        styles.statCard,
-        {
-          backgroundColor: colors.surface,
-          borderRadius: borderRadius.xl,
-          padding: spacing.base,
-          ...shadow.sm,
-          shadowColor: colors.shadowColor,
-          borderLeftWidth: 4,
-          borderLeftColor: accent,
-        },
-      ]}>
-      <View style={[styles.iconWrap, {backgroundColor: faded, borderRadius: borderRadius.md}]}>
-        <Text style={{fontSize: 20}}>{icon}</Text>
-      </View>
-      <Text style={[textStyles.h3, {color: colors.textPrimary, fontWeight: '800', marginTop: spacing.sm}]}>
-        {value ?? '—'}
-      </Text>
-      <Text style={[textStyles.caption, {color: colors.textSecondary, marginTop: 2}]}>{label}</Text>
-    </TouchableOpacity>
+    <View style={[styles.statCard, {borderRadius: borderRadius.xl, backgroundColor: bg}]}>
+      <Text style={styles.statIcon}>{icon}</Text>
+      <Text style={styles.statValue}>{value ?? '—'}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+      <View style={styles.statBubble} />
+    </View>
   );
 };
 
+const QuickBtn = ({icon, label, onPress, colors, borderRadius}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    activeOpacity={0.8}
+    style={[styles.quickBtn, {backgroundColor: colors.surface, borderRadius: borderRadius.xl, borderWidth: 1, borderColor: colors.border}]}>
+    <View style={[styles.quickIcon, {backgroundColor: colors.primaryFaded, borderRadius: borderRadius.lg}]}>
+      <Text style={{fontSize: 22}}>{icon}</Text>
+    </View>
+    <Text style={[styles.quickLabel, {color: colors.textPrimary}]}>{label}</Text>
+  </TouchableOpacity>
+);
+
 const TeacherDashboardScreen = ({navigation}) => {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   const {colors, spacing, textStyles, borderRadius, shadow} = useTheme();
   const {stats, classes, loading} = useSelector(s => s.teacher);
   const {user} = useSelector(s => s.auth);
@@ -50,110 +53,103 @@ const TeacherDashboardScreen = ({navigation}) => {
 
   useEffect(() => { load(); }, [load]);
 
-  const statCards = [
-    {label: 'My Classes',       value: stats?.myClasses,              icon: '🏫', accent: colors.primary,  faded: colors.primaryFaded},
-    {label: 'Total Assignments', value: stats?.totalAssignments,       icon: '📝', accent: colors.warning,  faded: colors.warningFaded},
-    {label: 'Due This Week',     value: stats?.dueSoonAssignments,     icon: '⏰', accent: colors.error,    faded: colors.errorFaded},
-    {label: "Today's Attendance",value: stats?.todayAttendanceMarked,  icon: '✅', accent: colors.success,  faded: colors.successFaded},
-  ];
+  const getGreeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
-      {/* Header */}
-      <View style={[styles.header, {backgroundColor: colors.headerBg, paddingHorizontal: spacing.base, paddingBottom: spacing.lg}]}>
-        <View>
-          <Text style={[textStyles.caption, {color: colors.whiteAlpha80}]}>Good day,</Text>
-          <Text style={[textStyles.h4, {color: colors.white, fontWeight: '700'}]}>{user?.name ?? 'Teacher'}</Text>
+    <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]} edges={['left','right','bottom']}>
+      <StatusBar barStyle="light-content" backgroundColor="#00B894" translucent={false} />
+      {/* ── HERO ── */}
+      <View style={[styles.hero, {backgroundColor: '#00B894', paddingTop: insets.top + 16}]}>
+        <View style={styles.heroRow}>
+          <View style={{flex: 1}}>
+            <Text style={styles.heroGreeting}>{getGreeting()}!</Text>
+            <Text style={styles.heroName}>{user?.name ?? 'Teacher'}</Text>
+            <View style={[styles.heroBadge, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+              <Text style={styles.heroBadgeText}>Teacher Portal</Text>
+            </View>
+          </View>
+          <View style={[styles.heroAvatar, {backgroundColor: 'rgba(255,255,255,0.2)'}]}>
+            <Text style={{fontSize: 30}}>👨‍🏫</Text>
+          </View>
         </View>
-        <View style={[styles.avatarCircle, {backgroundColor: colors.whiteAlpha20, borderRadius: borderRadius.full}]}>
-          <Text style={{fontSize: 22}}>👨‍🏫</Text>
-        </View>
+        <View style={styles.heroBubble1} />
+        <View style={styles.heroBubble2} />
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scroll, {padding: spacing.base}]}
+        contentContainerStyle={[styles.scroll, {paddingHorizontal: spacing.base, paddingBottom: 40}]}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={load} tintColor={colors.primary} />}>
 
-        <Text style={[textStyles.h5, {color: colors.textPrimary, marginBottom: spacing.md}]}>Overview</Text>
-
+        {/* ── STATS ── */}
+        <Text style={[styles.sectionTitle, {color: colors.textPrimary, marginTop: spacing.lg}]}>Overview</Text>
         {loading && !stats ? (
-          <ActivityIndicator color={colors.primary} size="large" style={{marginTop: 40}} />
+          <ActivityIndicator color={colors.primary} size="large" style={{marginTop: 32}} />
         ) : (
-          <View style={styles.grid}>
-            {statCards.map((c, i) => (
-              <View key={i} style={styles.cardWrap}>
-                <StatCard {...c} />
+          <View style={styles.statGrid}>
+            {STAT_CONFIG.map(c => (
+              <View key={c.key} style={styles.statWrap}>
+                <StatCard icon={c.icon} label={c.label} bg={c.bg} value={stats?.[c.key]} />
               </View>
             ))}
           </View>
         )}
 
-        {/* Quick Actions */}
-        <Text style={[textStyles.h5, {color: colors.textPrimary, marginTop: spacing.xl, marginBottom: spacing.md}]}>
-          Quick Actions
-        </Text>
-        <View style={styles.actionsRow}>
+        {/* ── QUICK ACTIONS ── */}
+        <Text style={[styles.sectionTitle, {color: colors.textPrimary}]}>Quick Actions</Text>
+        <View style={styles.quickRow}>
           {[
-            {label: 'Mark Attendance', icon: '✅', screen: 'Attendance'},
-            {label: 'New Assignment',  icon: '📝', screen: 'Assignments'},
-            {label: 'Upload Material', icon: '📁', screen: 'UploadMaterial'},
-            {label: 'Enter Marks',     icon: '📊', screen: 'Marks'},
+            {label: 'Attendance',  icon: '✅', screen: 'Attendance'},
+            {label: 'Assignments', icon: '📝', screen: 'Assignments'},
+            {label: 'Materials',   icon: '📁', screen: 'UploadMaterial'},
+            {label: 'Marks',       icon: '📊', screen: 'Marks'},
           ].map(a => (
-            <TouchableOpacity
+            <QuickBtn
               key={a.label}
+              icon={a.icon}
+              label={a.label}
               onPress={() => navigation.navigate(a.screen)}
-              style={[
-                styles.actionBtn,
-                {
-                  backgroundColor: colors.surface,
-                  borderRadius: borderRadius.lg,
-                  padding: spacing.md,
-                  ...shadow.sm,
-                  shadowColor: colors.shadowColor,
-                },
-              ]}>
-              <Text style={{fontSize: 26, marginBottom: 6}}>{a.icon}</Text>
-              <Text style={[textStyles.caption, {color: colors.textPrimary, fontWeight: '600', textAlign: 'center'}]}>
-                {a.label}
-              </Text>
-            </TouchableOpacity>
+              colors={colors}
+              borderRadius={borderRadius}
+            />
           ))}
         </View>
 
-        {/* My Classes list */}
+        {/* ── MY CLASSES ── */}
         {classes.length > 0 && (
           <>
-            <Text style={[textStyles.h5, {color: colors.textPrimary, marginTop: spacing.xl, marginBottom: spacing.md}]}>
-              My Classes
-            </Text>
+            <Text style={[styles.sectionTitle, {color: colors.textPrimary}]}>My Classes</Text>
             {classes.map(cls => (
               <TouchableOpacity
                 key={cls.id}
                 onPress={() => navigation.navigate('Attendance', {classId: cls.id, className: cls.name})}
-                style={[
-                  styles.classRow,
-                  {
-                    backgroundColor: colors.surface,
-                    borderRadius: borderRadius.lg,
-                    padding: spacing.md,
-                    marginBottom: spacing.sm,
-                    ...shadow.sm,
-                    shadowColor: colors.shadowColor,
-                  },
-                ]}>
-                <View style={[styles.classIcon, {backgroundColor: colors.primaryFaded, borderRadius: borderRadius.md}]}>
-                  <Text style={{fontSize: 18}}>🏫</Text>
+                style={[styles.classCard, {
+                  backgroundColor: colors.surface,
+                  borderRadius: borderRadius.xl,
+                  ...shadow.sm,
+                  shadowColor: colors.shadowColor,
+                  borderLeftWidth: 4,
+                  borderLeftColor: '#00B894',
+                }]}>
+                <View style={[styles.classIconWrap, {backgroundColor: '#E5FBF5', borderRadius: borderRadius.lg}]}>
+                  <Text style={{fontSize: 20}}>🏫</Text>
                 </View>
-                <View style={{flex: 1, marginLeft: spacing.sm}}>
-                  <Text style={[textStyles.body1, {color: colors.textPrimary, fontWeight: '600'}]}>
-                    {cls.name} {cls.section ? `- ${cls.section}` : ''}
+                <View style={{flex: 1, marginLeft: 12}}>
+                  <Text style={[styles.className, {color: colors.textPrimary}]}>
+                    {cls.name}{cls.section ? ` — ${cls.section}` : ''}
                   </Text>
                   {cls.grade && (
-                    <Text style={[textStyles.caption, {color: colors.textSecondary}]}>Grade {cls.grade}</Text>
+                    <Text style={[styles.classGrade, {color: colors.textSecondary}]}>Grade {cls.grade}</Text>
                   )}
                 </View>
-                <Text style={{color: colors.textTertiary, fontSize: 16}}>›</Text>
+                <View style={[styles.classArrow, {backgroundColor: colors.primaryFaded}]}>
+                  <Text style={{color: colors.primary, fontWeight: '700', fontSize: 16}}>›</Text>
+                </View>
               </TouchableOpacity>
             ))}
           </>
@@ -165,17 +161,38 @@ const TeacherDashboardScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {flex: 1},
-  header: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 20},
-  avatarCircle: {width: 44, height: 44, alignItems: 'center', justifyContent: 'center'},
-  scroll: {paddingBottom: 40},
-  grid: {flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6},
-  cardWrap: {width: '50%', padding: 6},
-  statCard: {},
-  iconWrap: {width: 44, height: 44, alignItems: 'center', justifyContent: 'center'},
-  actionsRow: {flexDirection: 'row', flexWrap: 'wrap', gap: 12},
-  actionBtn: {width: '22%', alignItems: 'center', minWidth: 76},
-  classRow: {flexDirection: 'row', alignItems: 'center'},
-  classIcon: {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
+
+  hero: {paddingHorizontal: 20, paddingBottom: 28, overflow: 'hidden'},
+  heroRow: {flexDirection: 'row', alignItems: 'center', zIndex: 2},
+  heroGreeting: {color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: '500'},
+  heroName: {color: '#FFFFFF', fontSize: 22, fontWeight: '800', marginTop: 2},
+  heroBadge: {alignSelf: 'flex-start', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 3, marginTop: 8},
+  heroBadgeText: {color: '#FFFFFF', fontSize: 11, fontWeight: '600'},
+  heroAvatar: {width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center'},
+  heroBubble1: {position: 'absolute', width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.08)', top: -30, right: -20},
+  heroBubble2: {position: 'absolute', width: 80, height: 80, borderRadius: 40, backgroundColor: 'rgba(255,255,255,0.06)', bottom: -20, right: 60},
+
+  scroll: {},
+  sectionTitle: {fontSize: 16, fontWeight: '700', marginBottom: 12, marginTop: 20},
+
+  statGrid: {flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6},
+  statWrap: {width: '50%', padding: 6},
+  statCard: {padding: 16, overflow: 'hidden', position: 'relative', minHeight: 110},
+  statIcon: {fontSize: 24, marginBottom: 8},
+  statValue: {color: '#FFFFFF', fontSize: 26, fontWeight: '800'},
+  statLabel: {color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: '500', marginTop: 2},
+  statBubble: {position: 'absolute', width: 70, height: 70, borderRadius: 35, backgroundColor: 'rgba(255,255,255,0.12)', right: -15, bottom: -15},
+
+  quickRow: {flexDirection: 'row', gap: 10},
+  quickBtn: {flex: 1, alignItems: 'center', paddingVertical: 14},
+  quickIcon: {width: 44, height: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 6},
+  quickLabel: {fontSize: 11, fontWeight: '600', textAlign: 'center'},
+
+  classCard: {flexDirection: 'row', alignItems: 'center', padding: 14, marginBottom: 10},
+  classIconWrap: {width: 44, height: 44, alignItems: 'center', justifyContent: 'center'},
+  className: {fontSize: 15, fontWeight: '700'},
+  classGrade: {fontSize: 12, marginTop: 2},
+  classArrow: {width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center'},
 });
 
 export default TeacherDashboardScreen;

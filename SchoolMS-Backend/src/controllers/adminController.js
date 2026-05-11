@@ -284,7 +284,7 @@ exports.toggleUserStatus = async (req, res, next) => {
 exports.assignRole = async (req, res, next) => {
   try {
     const {role} = req.body;
-    const validRoles = ['admin', 'teacher', 'student', 'parent', 'staff'];
+    const validRoles = ['admin', 'principal', 'teacher', 'student', 'parent', 'staff'];
     if (!validRoles.includes(role)) return ApiResponse.error(res, 'Invalid role', 400);
 
     const user = await User.findByPk(req.params.userId);

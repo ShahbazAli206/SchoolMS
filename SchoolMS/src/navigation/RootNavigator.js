@@ -2,12 +2,15 @@ import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useSelector, useDispatch} from 'react-redux';
-import {AppState, Platform} from 'react-native';
-import AuthNavigator    from './AuthNavigator';
-import AdminNavigator   from './AdminNavigator';
-import TeacherNavigator from './TeacherNavigator';
-import StudentNavigator from './StudentNavigator';
-import ParentNavigator  from './ParentNavigator';
+import {AppState, Platform, View} from 'react-native';
+import FloatingChatButton from '../components/common/FloatingChatButton';
+import AuthNavigator      from './AuthNavigator';
+import AdminNavigator     from './AdminNavigator';
+import TeacherNavigator   from './TeacherNavigator';
+import StudentNavigator   from './StudentNavigator';
+import ParentNavigator    from './ParentNavigator';
+import StaffNavigator     from './StaffNavigator';
+import PrincipalNavigator from './PrincipalNavigator';
 import SplashScreen     from '../screens/common/SplashScreen';
 import {logoutUser, updateUser} from '../redux/slices/authSlice';
 import {setFcmToken}    from '../redux/slices/appSlice';
@@ -18,10 +21,12 @@ import {authAPI}         from '../services/authService';
 const Stack = createStackNavigator();
 
 const ROLE_NAVIGATORS = {
-  admin:   AdminNavigator,
-  teacher: TeacherNavigator,
-  student: StudentNavigator,
-  parent:  ParentNavigator,
+  admin:     AdminNavigator,
+  principal: PrincipalNavigator,
+  staff:     StaffNavigator,
+  teacher:   TeacherNavigator,
+  student:   StudentNavigator,
+  parent:    ParentNavigator,
 };
 
 const registerFcm = async () => {};
@@ -48,13 +53,16 @@ const RootNavigator = () => {
 
   return (
     <NavigationContainer key={isAuthenticated ? 'authenticated' : 'unauthenticated'}>
-      <Stack.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
-        {isAuthenticated ? (
-          <Stack.Screen name="Main" component={MainNavigator} />
-        ) : (
-          <Stack.Screen name="Auth" component={AuthNavigator} />
-        )}
-      </Stack.Navigator>
+      <View style={{flex: 1}}>
+        <Stack.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
+          {isAuthenticated ? (
+            <Stack.Screen name="Main" component={MainNavigator} />
+          ) : (
+            <Stack.Screen name="Auth" component={AuthNavigator} />
+          )}
+        </Stack.Navigator>
+        {isAuthenticated && <FloatingChatButton />}
+      </View>
     </NavigationContainer>
   );
 };

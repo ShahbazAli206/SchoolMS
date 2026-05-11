@@ -50,6 +50,7 @@
       "Bash(where python *)",
       "Bash(where python3 *)",
       "Bash(where py *)",
+      "Bash(*)",
       "Bash(cat \"C:\\\\\\\\Users\\\\\\\\M7200~1.SHA\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\claude\\\\\\\\c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps\\\\\\\\2486ae53-e7ef-4e6b-8c8c-a2aa32ce22f5\\\\\\\\tasks\\\\\\\\bv03iwmny.output\")",
       "Read(//c/Users/M7200~1.SHA/AppData/Local/Temp/claude/c--Users-M--Shahbaz-Ali-Desktop-Projects-MobileApps/2486ae53-e7ef-4e6b-8c8c-a2aa32ce22f5/tasks/**)"
     ],

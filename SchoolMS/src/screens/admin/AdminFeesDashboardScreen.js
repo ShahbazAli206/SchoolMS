@@ -104,6 +104,11 @@ const AdminFeesDashboardScreen = ({navigation}) => {
     <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
       <PageHeader
         title="Fee Management"
+        showBack
+        onBackPress={() => {
+          if (navigation.canGoBack()) navigation.goBack();
+          else navigation.getParent()?.navigate('Home');
+        }}
         onAddPress={() => navigation.navigate('AdminCreateFee')}
         addLabel="+ New Fee"
       />

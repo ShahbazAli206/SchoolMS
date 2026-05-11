@@ -11,15 +11,15 @@ export const usersAPI = {
 };
 
 export const studentsAPI = {
-  getAll: params => apiClient.get('/students', {params}),
-  getById: id => apiClient.get(`/students/${id}`),
-  getMarks: id => apiClient.get(`/students/${id}/marks`),
-  getAttendance: id => apiClient.get(`/students/${id}/attendance`),
-  getAssignments: id => apiClient.get(`/students/${id}/assignments`),
-  getFees: id => apiClient.get(`/students/${id}/fees`),
+  getAll: params => apiClient.get('/admin/students', {params}),
+  getById: id => apiClient.get(`/admin/students/${id}`),
+  getMarks: id => apiClient.get('/teacher/marks', {params: {studentId: id}}),
+  getAttendance: id => apiClient.get('/teacher/attendance', {params: {studentId: id}}),
+  getAssignments: id => apiClient.get('/student/assignments', {params: {studentId: id}}),
+  getFees: id => apiClient.get(`/fees/student/${id}`),
 };
 
 export const teachersAPI = {
-  getAll: params => apiClient.get('/teachers', {params}),
-  getById: id => apiClient.get(`/teachers/${id}`),
+  getAll: params => apiClient.get('/admin/teachers', {params}),
+  getById: id => apiClient.get(`/admin/teachers/${id}`),
 };

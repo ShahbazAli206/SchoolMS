@@ -10,6 +10,8 @@ import AttendanceScreen       from '../screens/teacher/AttendanceScreen';
 import AssignmentsScreen      from '../screens/teacher/AssignmentsScreen';
 import MarksScreen            from '../screens/teacher/MarksScreen';
 import UploadMaterialScreen   from '../screens/teacher/UploadMaterialScreen';
+import TeacherComplaintsScreen     from '../screens/teacher/TeacherComplaintsScreen';
+import TeacherSubmitComplaintScreen from '../screens/teacher/TeacherSubmitComplaintScreen';
 import NotificationsScreen    from '../screens/common/NotificationsScreen';
 import ConversationsScreen    from '../screens/common/ConversationsScreen';
 import ChatScreen             from '../screens/common/ChatScreen';
@@ -40,11 +42,19 @@ const ChatStack = () => (
   </Stack.Navigator>
 );
 
+const ComplaintsStack = () => (
+  <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Screen name="TeacherComplaints"        component={TeacherComplaintsScreen} />
+    <Stack.Screen name="TeacherSubmitComplaint"   component={TeacherSubmitComplaintScreen} />
+  </Stack.Navigator>
+);
+
 const ICON_MAP = {
   Home: '🏠',
   Assignments: '📝',
   Attendance: '✅',
   Marks: '📊',
+  Complaints: '📋',
   Chat: '💬',
   Notifications: '🔔',
 };
@@ -76,26 +86,26 @@ const TeacherNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           position: 'absolute',
-          left: 16,
-          right: 16,
-          bottom: insets.bottom + (Platform.OS === 'ios' ? 10 : 8),
-          height: 40 + insets.bottom,
-          borderRadius: 24,
-          backgroundColor: colors.headerBg,
+          left: 10,
+          right: 10,
+          bottom: insets.bottom + (Platform.OS === 'ios' ? 8 : 6),
+          height: 52,
+          borderRadius: 20,
+          backgroundColor: '#1A1535',
           borderTopWidth: 0,
-          shadowColor: colors.shadowColor,
-          shadowOffset: {width: 0, height: 8},
-          shadowOpacity: 0.12,
-          shadowRadius: 20,
+          shadowColor: '#000',
+          shadowOffset: {width: 0, height: 6},
+          shadowOpacity: 0.22,
+          shadowRadius: 12,
           elevation: 10,
-          paddingTop: 4,
-          paddingBottom: insets.bottom,
-          paddingHorizontal: 10,
+          paddingTop: 0,
+          paddingBottom: 0,
+          paddingHorizontal: 4,
         },
-        tabBarActiveTintColor: colors.white,
-        tabBarInactiveTintColor: colors.whiteAlpha40,
-        tabBarLabelStyle: {fontSize: 11, fontWeight: '700', marginTop: 2},
-        tabBarItemStyle: {paddingTop: 6},
+        tabBarActiveTintColor: '#81ECEC',
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.38)',
+        tabBarLabelStyle: {fontSize: 9, fontWeight: '700', marginTop: 0},
+        tabBarItemStyle: {paddingTop: 3, paddingBottom: 3},
         tabBarIcon: ({focused, color}) => (
           <TabIcon label={ICON_MAP[route.name] || '•'} color={color} focused={focused} />
         ),
@@ -104,6 +114,7 @@ const TeacherNavigator = () => {
       <Tab.Screen name="Assignments" component={TeacherAssignmentStack} options={{title: 'Assignments'}} />
       <Tab.Screen name="Attendance"  component={AttendanceScreen}       options={{title: 'Attendance'}} />
       <Tab.Screen name="Marks"       component={MarksScreen}            options={{title: 'Marks'}} />
+      <Tab.Screen name="Complaints"  component={ComplaintsStack}        options={{title: 'Complaints'}} />
       <Tab.Screen name="Chat"        component={ChatStack}              options={{title: 'Chat'}} />
       <Tab.Screen
         name="Notifications"

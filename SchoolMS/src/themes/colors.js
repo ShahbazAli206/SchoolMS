@@ -1,54 +1,58 @@
-/**
- * GLOBAL COLOR PALETTE
- * Change any value here to update the entire app's color scheme.
- * All components import from this file — never hardcode colors elsewhere.
- */
-
 const palette = {
-  // Brand
-  primaryBlue: '#7B5BFF',
-  primaryBlueDark: '#5036EA',
-  primaryBlueLight: '#A78CFF',
-  primaryBlueFaded: '#EFE7FF',
+  // Brand — rich indigo/violet (matches reference UI)
+  primaryIndigo: '#6C5CE7',
+  primaryIndigoDark: '#4834D4',
+  primaryIndigoLight: '#A29BFE',
+  primaryIndigoFaded: '#EEF0FF',
 
-  // Accent
-  accentGreen: '#14D2B8',
-  accentGreenDark: '#0FA982',
-  accentGreenLight: '#87E7D1',
-  accentGreenFaded: '#E9F8F4',
+  // Secondary — vivid teal
+  teal: '#00CEC9',
+  tealDark: '#00A8A4',
+  tealLight: '#81ECEC',
+  tealFaded: '#E0F9F8',
 
-  accentOrange: '#FF8B3B',
-  accentOrangeDark: '#E56D2B',
-  accentOrangeLight: '#FFB97A',
-  accentOrangeFaded: '#FFF2E6',
+  // Accent coral/orange
+  coral: '#FF7675',
+  coralDark: '#D63031',
+  coralLight: '#FFAAAA',
+  coralFaded: '#FFF0F0',
 
-  accentRed: '#FF4F60',
-  accentRedDark: '#D5394A',
-  accentRedLight: '#FF9AA2',
-  accentRedFaded: '#FFE8EB',
+  // Accent amber
+  amber: '#FDCB6E',
+  amberDark: '#E17055',
+  amberLight: '#FEE5A9',
+  amberFaded: '#FFFBF0',
 
-  accentYellow: '#FFD166',
-  accentYellowDark: '#E6AC3E',
-  accentYellowLight: '#FFE699',
-  accentYellowFaded: '#FFF5D9',
+  // Accent mint
+  mint: '#00B894',
+  mintDark: '#00856E',
+  mintLight: '#55EFC4',
+  mintFaded: '#E5FBF5',
 
-  accentPurple: '#8C6FF7',
-  accentPurpleLight: '#C8B5FF',
-  accentPurpleFaded: '#F3EBFF',
+  // Accent sky blue
+  sky: '#74B9FF',
+  skyDark: '#0984E3',
+  skyLight: '#BAD9FF',
+  skyFaded: '#EBF5FF',
+
+  // Purple accent
+  purple: '#A29BFE',
+  purpleDark: '#6C5CE7',
+  purpleFaded: '#F0EEFF',
 
   // Neutrals
   white: '#FFFFFF',
   black: '#000000',
-  grey50: '#FAFAFA',
-  grey100: '#F5F5F5',
-  grey200: '#EEEEEE',
-  grey300: '#E0E0E0',
-  grey400: '#BDBDBD',
-  grey500: '#9E9E9E',
-  grey600: '#757575',
-  grey700: '#616161',
-  grey800: '#424242',
-  grey900: '#212121',
+  grey50:  '#F9FAFB',
+  grey100: '#F3F4F6',
+  grey200: '#E5E7EB',
+  grey300: '#D1D5DB',
+  grey400: '#9CA3AF',
+  grey500: '#6B7280',
+  grey600: '#4B5563',
+  grey700: '#374151',
+  grey800: '#1F2937',
+  grey900: '#111827',
 
   // Transparency
   overlay10: 'rgba(0,0,0,0.10)',
@@ -60,111 +64,117 @@ const palette = {
   whiteAlpha40: 'rgba(255,255,255,0.40)',
   whiteAlpha80: 'rgba(255,255,255,0.80)',
 
-  // Glassmorphism
-  glassBg: 'rgba(255,255,255,0.15)',
-  glassBorder: 'rgba(255,255,255,0.25)',
-  glassBgDark: 'rgba(0,0,0,0.25)',
+  glassBg: 'rgba(255,255,255,0.18)',
+  glassBorder: 'rgba(255,255,255,0.30)',
+  glassBgDark: 'rgba(0,0,0,0.30)',
 
-  // Transparent
   transparent: 'transparent',
 };
 
 // ─────────────────────────────────────────────────────────
-//  LIGHT THEME  (default)
+//  LIGHT THEME
 // ─────────────────────────────────────────────────────────
 export const lightColors = {
-  // Core brand
-  primary: palette.primaryBlue,
-  primaryDark: palette.primaryBlueDark,
-  primaryLight: palette.primaryBlueLight,
-  primaryFaded: palette.primaryBlueFaded,
+  primary: palette.primaryIndigo,
+  primaryDark: palette.primaryIndigoDark,
+  primaryLight: palette.primaryIndigoLight,
+  primaryFaded: palette.primaryIndigoFaded,
 
-  // Status
-  success: palette.accentGreen,
-  successDark: palette.accentGreenDark,
-  successLight: palette.accentGreenLight,
-  successFaded: palette.accentGreenFaded,
+  secondary: palette.teal,
+  secondaryDark: palette.tealDark,
+  secondaryLight: palette.tealLight,
+  secondaryFaded: palette.tealFaded,
 
-  warning: palette.accentOrange,
-  warningDark: palette.accentOrangeDark,
-  warningLight: palette.accentOrangeLight,
-  warningFaded: palette.accentOrangeFaded,
+  success: palette.mint,
+  successDark: palette.mintDark,
+  successLight: palette.mintLight,
+  successFaded: palette.mintFaded,
 
-  error: palette.accentRed,
-  errorDark: palette.accentRedDark,
-  errorLight: palette.accentRedLight,
-  errorFaded: palette.accentRedFaded,
+  warning: palette.amber,
+  warningDark: palette.amberDark,
+  warningLight: palette.amberLight,
+  warningFaded: palette.amberFaded,
 
-  info: palette.accentYellow,
-  infoFaded: palette.accentYellowFaded,
+  error: palette.coral,
+  errorDark: palette.coralDark,
+  errorLight: palette.coralLight,
+  errorFaded: palette.coralFaded,
+
+  info: palette.sky,
+  infoDark: palette.skyDark,
+  infoFaded: palette.skyFaded,
+
+  accent: palette.purple,
+  accentFaded: palette.purpleFaded,
 
   // Role badge colors
-  roleAdmin: palette.accentPurple,
-  roleAdminFaded: palette.accentPurpleFaded,
-  roleTeacher: palette.primaryBlue,
-  roleTeacherFaded: palette.primaryBlueFaded,
-  roleStudent: palette.accentGreen,
-  roleStudentFaded: palette.accentGreenFaded,
-  roleParent: palette.accentOrange,
-  roleParentFaded: palette.accentOrangeFaded,
-  roleStaff: palette.grey700,
+  roleAdmin: palette.purple,
+  roleAdminFaded: palette.purpleFaded,
+  roleTeacher: palette.primaryIndigo,
+  roleTeacherFaded: palette.primaryIndigoFaded,
+  roleStudent: palette.teal,
+  roleStudentFaded: palette.tealFaded,
+  roleParent: palette.coral,
+  roleParentFaded: palette.coralFaded,
+  roleStaff: palette.grey600,
   roleStaffFaded: palette.grey200,
 
-  // Backgrounds
-  background: palette.grey50,
-  surface: palette.white,
+  // Backgrounds — soft tint, never pure white
+  background: '#EEF0FB',
+  surface: '#FBFBFF',
   surfaceElevated: palette.white,
-  cardBg: palette.white,
+  cardBg: '#FBFBFF',
   inputBg: palette.grey100,
 
   // Text
   textPrimary: palette.grey900,
   textSecondary: palette.grey600,
-  textTertiary: palette.grey500,
-  textDisabled: palette.grey400,
+  textTertiary: palette.grey400,
+  textDisabled: palette.grey300,
   textInverse: palette.white,
-  textLink: palette.primaryBlue,
+  textLink: palette.primaryIndigo,
 
-  // Borders & dividers
-  border: palette.grey300,
-  borderLight: palette.grey200,
-  divider: palette.grey200,
+  // Borders
+  border: palette.grey200,
+  borderLight: palette.grey100,
+  divider: palette.grey100,
 
   // Navigation
   navBackground: palette.white,
   navBorder: palette.grey200,
-  navActive: palette.primaryBlue,
-  navInactive: palette.grey500,
+  navActive: palette.primaryIndigo,
+  navInactive: palette.grey400,
 
-  // Header
-  headerBg: palette.primaryBlue,
-  headerText: palette.white,
-  headerIcon: palette.white,
+  // Header — unified: light surface in light mode, dark in dark mode
+  headerBg: palette.white,
+  headerText: palette.grey900,
+  headerIcon: palette.grey700,
+  headerBorder: palette.grey200,
 
   // Tab bar
   tabBarBg: palette.white,
-  tabBarActive: palette.primaryBlue,
+  tabBarActive: palette.primaryIndigo,
   tabBarInactive: palette.grey400,
 
   // Icons
   iconPrimary: palette.grey700,
-  iconSecondary: palette.grey500,
+  iconSecondary: palette.grey400,
   iconDisabled: palette.grey300,
 
-  // Shadows
-  shadowColor: palette.black,
+  shadowColor: '#6C5CE7',
 
-  // Gradient stops (used with LinearGradient)
-  gradientStart: palette.primaryBlue,
-  gradientEnd: palette.primaryBlueDark,
-  gradientAlt1: '#4A90E2',
-  gradientAlt2: '#1A73E8',
+  // Gradient stops
+  gradientStart: '#6C5CE7',
+  gradientMid: '#8E7CF8',
+  gradientEnd: '#4834D4',
+  gradientAlt1: '#00CEC9',
+  gradientAlt2: '#0984E3',
+  gradientWarm1: '#FDCB6E',
+  gradientWarm2: '#E17055',
 
-  // Glass
   glassBg: palette.glassBg,
   glassBorder: palette.glassBorder,
 
-  // Misc
   overlay: palette.overlay20,
   transparent: palette.transparent,
   white: palette.white,
@@ -179,68 +189,77 @@ export const lightColors = {
 //  DARK THEME
 // ─────────────────────────────────────────────────────────
 export const darkColors = {
-  primary: palette.primaryBlueLight,
-  primaryDark: palette.primaryBlue,
-  primaryLight: '#90CAF9',
-  primaryFaded: 'rgba(74,144,226,0.15)',
+  primary: palette.primaryIndigoLight,
+  primaryDark: palette.primaryIndigo,
+  primaryLight: '#C7BFFF',
+  primaryFaded: 'rgba(108,92,231,0.18)',
 
-  success: palette.accentGreenLight,
-  successDark: palette.accentGreen,
-  successLight: '#A5D6A7',
-  successFaded: 'rgba(52,168,83,0.15)',
+  secondary: palette.tealLight,
+  secondaryDark: palette.teal,
+  secondaryFaded: 'rgba(0,206,201,0.15)',
 
-  warning: palette.accentOrangeLight,
-  warningDark: palette.accentOrange,
-  warningLight: '#FFCC80',
-  warningFaded: 'rgba(255,109,0,0.15)',
+  success: palette.mintLight,
+  successDark: palette.mint,
+  successLight: '#A8F0DC',
+  successFaded: 'rgba(0,184,148,0.15)',
 
-  error: palette.accentRedLight,
-  errorDark: palette.accentRed,
-  errorLight: '#FFCDD2',
-  errorFaded: 'rgba(234,67,53,0.15)',
+  warning: palette.amberLight,
+  warningDark: palette.amber,
+  warningLight: '#FFE9B0',
+  warningFaded: 'rgba(253,203,110,0.15)',
 
-  info: palette.accentYellowLight,
-  infoFaded: 'rgba(251,188,4,0.15)',
+  error: palette.coralLight,
+  errorDark: palette.coral,
+  errorLight: '#FFCCCC',
+  errorFaded: 'rgba(255,118,117,0.15)',
 
-  roleAdmin: palette.accentPurpleLight,
-  roleAdminFaded: 'rgba(123,31,162,0.20)',
-  roleTeacher: palette.primaryBlueLight,
-  roleTeacherFaded: 'rgba(74,144,226,0.20)',
-  roleStudent: palette.accentGreenLight,
-  roleStudentFaded: 'rgba(52,168,83,0.20)',
-  roleParent: palette.accentOrangeLight,
-  roleParentFaded: 'rgba(255,109,0,0.20)',
+  info: palette.skyLight,
+  infoDark: palette.sky,
+  infoFaded: 'rgba(116,185,255,0.15)',
+
+  accent: palette.purple,
+  accentFaded: 'rgba(162,155,254,0.18)',
+
+  roleAdmin: palette.purple,
+  roleAdminFaded: 'rgba(162,155,254,0.20)',
+  roleTeacher: palette.primaryIndigoLight,
+  roleTeacherFaded: 'rgba(108,92,231,0.20)',
+  roleStudent: palette.tealLight,
+  roleStudentFaded: 'rgba(0,206,201,0.20)',
+  roleParent: palette.coralLight,
+  roleParentFaded: 'rgba(255,118,117,0.20)',
   roleStaff: palette.grey400,
-  roleStaffFaded: 'rgba(97,97,97,0.20)',
+  roleStaffFaded: 'rgba(75,85,99,0.20)',
 
-  background: '#121212',
-  surface: '#1E1E1E',
-  surfaceElevated: '#2C2C2C',
-  cardBg: '#1E1E1E',
-  inputBg: '#2C2C2C',
+  background: '#0F0E17',
+  surface: '#1A1928',
+  surfaceElevated: '#252338',
+  cardBg: '#1A1928',
+  inputBg: '#252338',
 
-  textPrimary: palette.grey100,
+  textPrimary: '#F0EFFF',
   textSecondary: palette.grey400,
   textTertiary: palette.grey500,
   textDisabled: palette.grey700,
   textInverse: palette.grey900,
-  textLink: palette.primaryBlueLight,
+  textLink: palette.primaryIndigoLight,
 
-  border: palette.grey700,
-  borderLight: palette.grey800,
-  divider: '#2C2C2C',
+  border: '#2E2C45',
+  borderLight: '#1F1E30',
+  divider: '#1F1E30',
 
-  navBackground: '#1E1E1E',
-  navBorder: palette.grey800,
-  navActive: palette.primaryBlueLight,
+  navBackground: '#1A1928',
+  navBorder: '#2E2C45',
+  navActive: palette.primaryIndigoLight,
   navInactive: palette.grey600,
 
-  headerBg: '#1A1A2E',
+  headerBg: '#1A1928',
   headerText: palette.white,
-  headerIcon: palette.white,
+  headerIcon: palette.grey300,
+  headerBorder: '#2E2C45',
 
-  tabBarBg: '#1E1E1E',
-  tabBarActive: palette.primaryBlueLight,
+  tabBarBg: '#1A1928',
+  tabBarActive: palette.primaryIndigoLight,
   tabBarInactive: palette.grey600,
 
   iconPrimary: palette.grey300,
@@ -249,13 +268,16 @@ export const darkColors = {
 
   shadowColor: palette.black,
 
-  gradientStart: '#1A1A2E',
-  gradientEnd: '#16213E',
-  gradientAlt1: '#0F3460',
-  gradientAlt2: '#1A73E8',
+  gradientStart: '#1A1928',
+  gradientMid: '#252338',
+  gradientEnd: '#12112A',
+  gradientAlt1: '#00CEC9',
+  gradientAlt2: '#0984E3',
+  gradientWarm1: '#FDCB6E',
+  gradientWarm2: '#E17055',
 
   glassBg: palette.glassBgDark,
-  glassBorder: 'rgba(255,255,255,0.10)',
+  glassBorder: 'rgba(255,255,255,0.08)',
 
   overlay: palette.overlay40,
   transparent: palette.transparent,

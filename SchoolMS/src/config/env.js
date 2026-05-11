@@ -12,7 +12,7 @@ const ENV = {
     TIMEOUT: 30000,
   },
   production: {
-    BASE_URL: 'https://your-production-server.com/api',
+    BASE_URL: 'https://schoolms-backend.onrender.com/api',  // ← replace with your actual Render URL
     TIMEOUT: 30000,
   },
 };

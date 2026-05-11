@@ -138,16 +138,22 @@ const UserCard = ({item, onEdit, onToggle, onDelete, onAssignRole}) => {
 };
 
 // ── Main Screen ───────────────────────────────────────────────────────────
-const UserManagementScreen = ({navigation}) => {
+const UserManagementScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const {colors, spacing, textStyles, borderRadius} = useTheme();
   const {users, usersLoading, usersTotal, usersPage} = useSelector(s => s.admin);
 
+  const initialRole = route?.params?.defaultRole || 'all';
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState(initialRole);
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const searchTimer = useRef(null);
+
+  // sync incoming role param (e.g. when re-navigating with new role)
+  useEffect(() => {
+    if (route?.params?.defaultRole) setRoleFilter(route.params.defaultRole);
+  }, [route?.params?.defaultRole]);
 
   const load = useCallback((p = 1, reset = true) => {
     const params = {page: p, limit: 15};
@@ -221,6 +227,8 @@ const UserManagementScreen = ({navigation}) => {
     <SafeAreaView style={[styles.container, {backgroundColor: colors.background}]}>
       <PageHeader
         title="User Management"
+        showBack={navigation.canGoBack()}
+        onBackPress={() => navigation.goBack()}
         onAddPress={() => navigation.navigate('AddUser')}
         addLabel="+ Add"
       />

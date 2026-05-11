@@ -12,6 +12,7 @@ import feeReducer          from '../slices/feeSlice';
 import notificationReducer from '../slices/notificationSlice';
 import chatReducer         from '../slices/chatSlice';
 import complaintReducer    from '../slices/complaintSlice';
+import eventReducer        from '../slices/eventSlice';
 
 const persistConfig = {
   key: 'schoolms-root',
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   notifications: notificationReducer,
   chat:          chatReducer,
   complaints:    complaintReducer,
+  events:        eventReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
