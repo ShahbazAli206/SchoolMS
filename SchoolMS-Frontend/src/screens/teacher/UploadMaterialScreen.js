@@ -11,7 +11,7 @@ import {fetchMyClasses, fetchSubjects, fetchMaterials} from '../../redux/slices/
 import {teacherAPI} from '../../services/teacherService';
 import AppInput from '../../components/common/AppInput';
 import AppButton from '../../components/common/AppButton';
-// import DocumentPicker from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 
 const FILE_TYPE_ICONS = {
   pdf: '📄', video: '🎬', image: '🖼️', document: '📃', other: '📎',
@@ -88,24 +88,23 @@ const UploadMaterialScreen = () => {
   };
 
   const pickFile = async () => {
-    Alert.alert('Demo Mode', 'File upload is disabled in demo mode.');
-    // try {
-    //   const res = await DocumentPicker.pickSingle({
-    //     type: [
-    //       DocumentPicker.types.pdf,
-    //       DocumentPicker.types.video,
-    //       DocumentPicker.types.images,
-    //       DocumentPicker.types.doc,
-    //       DocumentPicker.types.docx,
-    //       DocumentPicker.types.ppt,
-    //       DocumentPicker.types.pptx,
-    //     ],
-    //   });
-    //   setPickedFile(res);
-    //   if (errors.file) setErrors(p => ({...p, file: ''}));
-    // } catch (e) {
-    //   if (!DocumentPicker.isCancel(e)) Alert.alert('Error', 'Could not pick file.');
-    // }
+    try {
+      const res = await DocumentPicker.pickSingle({
+        type: [
+          DocumentPicker.types.pdf,
+          DocumentPicker.types.video,
+          DocumentPicker.types.images,
+          DocumentPicker.types.doc,
+          DocumentPicker.types.docx,
+          DocumentPicker.types.ppt,
+          DocumentPicker.types.pptx,
+        ],
+      });
+      setPickedFile(res);
+      if (errors.file) setErrors(p => ({...p, file: ''}));
+    } catch (e) {
+      if (!DocumentPicker.isCancel(e)) Alert.alert('Error', 'Could not pick file.');
+    }
   };
 
   const validate = () => {

@@ -19,7 +19,7 @@ const AppContent = () => {
   return (
     <>
       <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
+        barStyle="light-content"
         backgroundColor={colors.headerBg}
       />
       <RootNavigator />

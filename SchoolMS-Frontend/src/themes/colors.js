@@ -145,11 +145,11 @@ export const lightColors = {
   navActive: palette.primaryIndigo,
   navInactive: palette.grey400,
 
-  // Header — unified: light surface in light mode, dark in dark mode
-  headerBg: palette.white,
-  headerText: palette.grey900,
-  headerIcon: palette.grey700,
-  headerBorder: palette.grey200,
+  // Header — deep indigo in light mode so text/icons are always visible
+  headerBg: palette.primaryIndigo,
+  headerText: palette.white,
+  headerIcon: palette.whiteAlpha80,
+  headerBorder: palette.primaryIndigoDark,
 
   // Tab bar
   tabBarBg: palette.white,
