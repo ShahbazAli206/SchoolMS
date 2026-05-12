@@ -13,6 +13,19 @@ import {
 } from '../../redux/slices/teacherSlice';
 import AppInput from '../../components/common/AppInput';
 import AppButton from '../../components/common/AppButton';
+import WheelDatePicker from '../../components/common/WheelDatePicker';
+
+const todayISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const prettyDate = iso => {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', {weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'});
+};
 import {shareAssignmentToWhatsApp} from '../../utils/whatsAppShare';
 
 const EXAM_TYPES = ['unit_test', 'mid_term', 'final', 'assignment', 'quiz'];
@@ -119,11 +132,12 @@ const CreateModal = ({visible, onClose}) => {
   const {classes, classStudents, subjects, actionLoading} = useSelector(s => s.teacher);
 
   const [form, setForm] = useState({
-    title: '', description: '', due_date: '', max_marks: '100',
+    title: '', description: '', due_date: todayISO(), max_marks: '100',
     assignTo: 'class',   // 'class' | 'student'
     class_id: '', student_id: '', subject_id: '',
   });
   const [errors, setErrors] = useState({});
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const set = (k, v) => { setForm(p => ({...p, [k]: v})); if (errors[k]) setErrors(p => ({...p, [k]: ''})); };
 
@@ -191,9 +205,35 @@ const CreateModal = ({visible, onClose}) => {
               placeholder="Assignment title" error={errors.title} />
             <AppInput label="Description" value={form.description} onChangeText={v => set('description', v)}
               placeholder="Instructions (optional)" multiline numberOfLines={3} />
-            <AppInput label="Due Date * (YYYY-MM-DD)" value={form.due_date}
-              onChangeText={v => set('due_date', v)} placeholder="2025-12-31"
-              keyboardType="numbers-and-punctuation" error={errors.due_date} />
+            {/* Due Date — tappable button opens wheel picker */}
+            <Text style={[textStyles.label, {color: colors.textSecondary, marginBottom: 6}]}>Due Date *</Text>
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.7}
+              style={[
+                styles.dateBtn,
+                {
+                  backgroundColor: colors.inputBg,
+                  borderColor: errors.due_date ? colors.error : colors.border,
+                  borderRadius: borderRadius.md,
+                  marginBottom: errors.due_date ? 4 : 14,
+                },
+              ]}>
+              <Text style={{fontSize: 18, marginRight: 10}}>📅</Text>
+              <Text style={[textStyles.body1, {flex: 1, color: form.due_date ? colors.textPrimary : colors.textTertiary, fontWeight: form.due_date ? '700' : '400'}]}>
+                {form.due_date ? prettyDate(form.due_date) : 'Tap to pick a date'}
+              </Text>
+              <Text style={{color: colors.textSecondary, fontSize: 12, fontWeight: '600'}}>Change ›</Text>
+            </TouchableOpacity>
+            {errors.due_date ? <Text style={[textStyles.caption, {color: colors.error, marginBottom: 10}]}>{errors.due_date}</Text> : null}
+
+            <WheelDatePicker
+              visible={showDatePicker}
+              initialDate={form.due_date || new Date()}
+              onConfirm={(iso) => { set('due_date', iso); setShowDatePicker(false); }}
+              onClose={() => setShowDatePicker(false)}
+              title="Pick due date"
+            />
             <AppInput label="Max Marks" value={form.max_marks} onChangeText={v => set('max_marks', v)}
               placeholder="100" keyboardType="numeric" />
 
