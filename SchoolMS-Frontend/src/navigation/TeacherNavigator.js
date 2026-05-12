@@ -108,14 +108,6 @@ const CustomTabBar = ({state, descriptors, navigation, onPressFab}) => {
 
   return (
     <View style={[barStyles.wrap, {paddingBottom: insets.bottom + 6}]}>
-      {/* In-app Chat FAB (left, green) */}
-      <TouchableOpacity
-        onPress={() => navigation.navigate('HomeTab', {screen: 'Conversations'})}
-        activeOpacity={0.85}
-        style={[barStyles.chatFab, {bottom: insets.bottom + 14}]}>
-        <Text style={{fontSize: 20, color: '#fff'}}>💬</Text>
-      </TouchableOpacity>
-
       <View style={barStyles.bar}>
         {VISIBLE_TABS.map(name => {
           if (name === '__FAB__') {
@@ -168,7 +160,6 @@ const barStyles = StyleSheet.create({
   activeDot: {width: 4, height: 4, borderRadius: 2, backgroundColor: '#6C5CE7', marginTop: 2},
   centerFabWrap: {width: 64, alignItems: 'center', justifyContent: 'center'},
   centerFab: {width: 56, height: 56, borderRadius: 28, backgroundColor: '#6C5CE7', alignItems: 'center', justifyContent: 'center', marginTop: -24, shadowColor: '#6C5CE7', shadowOpacity: 0.4, shadowRadius: 10, shadowOffset: {width: 0, height: 4}, elevation: 12, borderWidth: 4, borderColor: '#FFFFFF'},
-  chatFab: {position: 'absolute', left: 16, width: 48, height: 48, borderRadius: 24, backgroundColor: '#10B981', alignItems: 'center', justifyContent: 'center', shadowColor: '#10B981', shadowOpacity: 0.35, shadowRadius: 8, shadowOffset: {width: 0, height: 4}, elevation: 10, zIndex: 20},
 });
 
 const TeacherActionSheetWrapper = ({visible, onClose}) => {
