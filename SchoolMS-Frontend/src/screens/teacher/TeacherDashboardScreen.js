@@ -99,8 +99,10 @@ const QuickAction = ({action, delay, onPress}) => {
 const ScheduleCard = ({cls, onPress}) => {
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(fade, {toValue: 1, duration: 500, delay: 400, useNativeDriver: true}).start(); }, [fade]);
-  const subject = cls?.next_subject || cls?.subject || 'Class Session';
-  const className = cls ? `${cls.name}${cls.section ? ` — ${cls.section}` : ''}` : '—';
+  // Subject may be a string or an object {id, name}; normalize to a string
+  const subjRaw = cls?.next_subject || cls?.subject;
+  const subject = typeof subjRaw === 'object' ? (subjRaw?.name || 'Class Session') : (subjRaw || 'Class Session');
+  const className = cls ? `${cls.name || ''}${cls.section ? ` — ${cls.section}` : ''}` : '—';
   return (
     <Animated.View style={{opacity: fade}}>
       <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.scheduleCard}>
@@ -126,6 +128,10 @@ const ScheduleCard = ({cls, onPress}) => {
 const AnnouncementCard = ({item, onPress}) => {
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => { Animated.timing(fade, {toValue: 1, duration: 500, delay: 500, useNativeDriver: true}).start(); }, [fade]);
+  // Backend may return sender as either a string or {id, name}; handle both
+  const senderName = typeof item.sender === 'object' ? (item.sender?.name || 'Admin') : (item.sender || 'Admin');
+  const dateStr = item.createdAt || item.created_at;
+  const dateLabel = dateStr ? new Date(dateStr).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'}) : '';
   return (
     <Animated.View style={{opacity: fade}}>
       <TouchableOpacity activeOpacity={0.85} onPress={onPress} style={styles.annCard}>
@@ -133,10 +139,10 @@ const AnnouncementCard = ({item, onPress}) => {
           <Text style={{fontSize: 22}}>📣</Text>
         </View>
         <View style={{flex: 1, marginLeft: 12}}>
-          <Text style={styles.annTitle} numberOfLines={1}>{item.title}</Text>
-          <Text style={styles.annBody} numberOfLines={2}>{item.body}</Text>
+          <Text style={styles.annTitle} numberOfLines={1}>{String(item.title || '')}</Text>
+          <Text style={styles.annBody} numberOfLines={2}>{String(item.body || '')}</Text>
           <Text style={styles.annMeta}>
-            Posted by {item.sender || 'Admin'}  ·  {new Date(item.createdAt).toLocaleDateString('en-US', {day: 'numeric', month: 'short', year: 'numeric'})}
+            Posted by {senderName}  ·  {dateLabel}
           </Text>
         </View>
         <TouchableOpacity hitSlop={{top:8,bottom:8,left:8,right:8}}>
