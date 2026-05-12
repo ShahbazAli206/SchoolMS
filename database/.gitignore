@@ -1,0 +1,3 @@
+# Per-laptop marker — tracks which dump.sql was last imported here.
+# Must NOT be shared between laptops.
+.last_imported_hash
