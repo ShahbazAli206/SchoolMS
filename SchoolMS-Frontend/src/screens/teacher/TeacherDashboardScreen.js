@@ -87,7 +87,7 @@ const QuickAction = ({action, delay, onPress}) => {
         activeOpacity={1}>
         <Animated.View style={[styles.quickCard, {transform: [{scale: press}]}]}>
           <View style={[styles.quickIconWrap, {backgroundColor: action.bg}]}>
-            <Text style={{fontSize: 18, color: action.tint}}>{action.icon}</Text>
+            <Text style={{fontSize: 24, color: action.tint}}>{action.icon}</Text>
           </View>
           <Text style={styles.quickLabel} numberOfLines={2}>{action.label}</Text>
         </Animated.View>
@@ -314,9 +314,9 @@ const TeacherDashboardScreen = ({navigation}) => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingHorizontal: 12, paddingVertical: 4}}>
+            contentContainerStyle={{paddingHorizontal: 16, paddingVertical: 6}}>
             {QUICK_ACTIONS.map((a, i) => (
-              <View key={a.label} style={{marginRight: 6}}>
+              <View key={a.label} style={{marginRight: 12}}>
                 <QuickAction action={a} delay={150 + i * 60} onPress={() => goAction(a.screen)} />
               </View>
             ))}
@@ -407,9 +407,9 @@ const styles = StyleSheet.create({
   statChev: {position: 'absolute', right: 10, bottom: 10, width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center'},
 
   // Quick Actions
-  quickCard: {width: 58, alignItems: 'center', paddingVertical: 9, paddingHorizontal: 2, backgroundColor: '#FFFFFF', borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: {width: 0, height: 2}, elevation: 2},
-  quickIconWrap: {width: 38, height: 38, borderRadius: 11, alignItems: 'center', justifyContent: 'center', marginBottom: 5},
-  quickLabel: {fontSize: 9.5, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 12},
+  quickCard: {width: 92, alignItems: 'center', paddingVertical: 14, paddingHorizontal: 8, backgroundColor: '#FFFFFF', borderRadius: 16, shadowColor: '#000', shadowOpacity: 0.07, shadowRadius: 8, shadowOffset: {width: 0, height: 3}, elevation: 3},
+  quickIconWrap: {width: 50, height: 50, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginBottom: 8},
+  quickLabel: {fontSize: 11.5, fontWeight: '700', color: '#374151', textAlign: 'center', lineHeight: 15},
 
   // Schedule card
   scheduleCard: {flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 14, paddingVertical: 14, paddingRight: 12, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: {width: 0, height: 2}, elevation: 2},
