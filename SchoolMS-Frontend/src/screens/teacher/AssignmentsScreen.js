@@ -179,7 +179,7 @@ const CreateModal = ({visible, onClose}) => {
 
     const result = await dispatch(createAssignmentThunk(payload));
     if (createAssignmentThunk.fulfilled.match(result)) {
-      setForm({title: '', description: '', due_date: '', max_marks: '100', assignTo: 'class', class_id: '', student_id: '', subject_id: ''});
+      setForm({title: '', description: '', due_date: todayISO(), max_marks: '100', assignTo: 'class', class_id: '', student_id: '', subject_id: ''});
       onClose();
     } else {
       Alert.alert('Error', result.payload || 'Failed to create assignment');
@@ -386,6 +386,7 @@ const styles = StyleSheet.create({
   modalScroll: {paddingBottom: 40},
   toggleRow: {flexDirection: 'row', gap: 10},
   toggleBtn: {flex: 1, alignItems: 'center', paddingVertical: 10},
+  dateBtn: {flexDirection: 'row', alignItems: 'center', paddingHorizontal: 14, paddingVertical: 14, borderWidth: 1},
   chip: {paddingHorizontal: 14, paddingVertical: 7},
 });
 

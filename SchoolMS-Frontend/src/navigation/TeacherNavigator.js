@@ -85,6 +85,14 @@ const TabIcon = ({routeName, focused, color}) => {
   );
 };
 
+// Each tab's initial (root) screen. Tapping a tab from anywhere should land here.
+const TAB_ROOT_SCREENS = {
+  HomeTab:     'TeacherDashboard',
+  ClassesTab:  'TeacherClasses',
+  StudentsTab: 'TeacherStudents',
+  ProfileTab:  'Profile',
+};
+
 const CustomTabBar = ({state, descriptors, navigation, onPressFab}) => {
   const insets = useSafeAreaInsets();
   const VISIBLE_TABS = ['HomeTab', 'ClassesTab', '__FAB__', 'StudentsTab', 'ProfileTab'];
@@ -132,7 +140,13 @@ const CustomTabBar = ({state, descriptors, navigation, onPressFab}) => {
           return (
             <TouchableOpacity
               key={name}
-              onPress={() => { if (!focused) navigation.navigate(name); }}
+              onPress={() => {
+                // Always navigate to the tab's root screen. Works whether
+                // we're on a different tab (switches tab) or on a sub-screen
+                // of this tab (pops the nested stack back to root).
+                const rootScreen = TAB_ROOT_SCREENS[name];
+                navigation.navigate(name, rootScreen ? {screen: rootScreen} : undefined);
+              }}
               activeOpacity={0.7}
               style={barStyles.tabBtn}>
               <TabIcon routeName={name} focused={focused} color={color} />
