@@ -148,7 +148,7 @@ const UploadMaterialScreen = ({navigation}) => {
 
   const pickFile = async () => {
     try {
-      const [res] = await pick({
+      const results = await pick({
         type: [
           docTypes.pdf,
           docTypes.video,
@@ -159,11 +159,30 @@ const UploadMaterialScreen = ({navigation}) => {
           docTypes.pptx,
         ],
       });
-      setPickedFile(res);
+      const res = Array.isArray(results) ? results[0] : results;
+      if (!res) return;
+      // Normalize possibly-null fields (the new picker can return null name/type/size)
+      const safe = {
+        uri:  res.uri,
+        name: res.name || `file_${Date.now()}`,
+        type: res.type || 'application/octet-stream',
+        size: typeof res.size === 'number' ? res.size : 0,
+      };
+      // Block files larger than the backend's 100 MB limit (videos especially)
+      const MAX_BYTES = 100 * 1024 * 1024;
+      if (safe.size > MAX_BYTES) {
+        Alert.alert(
+          'File too large',
+          `Selected file is ${(safe.size / 1024 / 1024).toFixed(1)} MB. Max allowed is 100 MB.`,
+        );
+        return;
+      }
+      setPickedFile(safe);
       if (errors.file) setErrors(p => ({...p, file: ''}));
     } catch (e) {
       if (isErrorWithCode(e) && e.code === errorCodes.OPERATION_CANCELED) return;
-      Alert.alert('Error', 'Could not pick file.');
+      console.log('[UploadMaterial] pickFile error:', e?.message || e);
+      Alert.alert('Could not pick file', e?.message || 'Please try a different file.');
     }
   };
 
@@ -294,7 +313,9 @@ const UploadMaterialScreen = ({navigation}) => {
               </Text>
               {pickedFile?.size ? (
                 <Text style={[textStyles.caption, {color: colors.textTertiary, marginTop: 2}]}>
-                  {(pickedFile.size / 1024).toFixed(1)} KB
+                  {pickedFile.size >= 1024 * 1024
+                    ? `${(pickedFile.size / 1024 / 1024).toFixed(1)} MB`
+                    : `${(pickedFile.size / 1024).toFixed(1)} KB`}
                 </Text>
               ) : null}
             </TouchableOpacity>
