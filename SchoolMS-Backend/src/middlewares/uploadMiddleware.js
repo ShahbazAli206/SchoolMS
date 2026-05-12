@@ -19,10 +19,13 @@ const fileFilter = (req, file, cb) => {
 
 const maxSize = parseInt(process.env.MAX_FILE_SIZE_MB || '100', 10) * 1024 * 1024;
 
+// Treat placeholder values (your_*, changeme, "") as missing so we fall back
+// to local-disk storage instead of crashing when calling Cloudinary.
+const looksReal = v => v && !/^(your_|change_?me|placeholder|xxx)/i.test(v) && v.length > 4;
 const hasCloudinary =
-  process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
-  process.env.CLOUDINARY_API_SECRET;
+  looksReal(process.env.CLOUDINARY_CLOUD_NAME) &&
+  looksReal(process.env.CLOUDINARY_API_KEY) &&
+  looksReal(process.env.CLOUDINARY_API_SECRET);
 
 // ── Cloudinary storage ────────────────────────────────────────────────────────
 function buildCloudinaryStorage() {
